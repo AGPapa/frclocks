@@ -1,26 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FRCLocks.com</title>
-    
-    <!-- Global Site Tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_tracking_id }}"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', '{{ ga_tracking_id }}');
-    </script>
-    
-    <link rel="stylesheet" href="../../static/css/style.css">
-</head>
+    {% include 'includes/header.html' %}
 <body>
     <div class="container">
-        <h1>FRC District Championship Locks</h1>
-        <a href='../districts/chs.html'>Chesapeake</a> <a href='../districts/fim.html'>Michigan</a> <a href='../districts/fin.html'>Indiana</a> <a href='../districts/isr.html'>Israel</a> <a href='../districts/fma.html'>Mid-Atlantic</a> <a href='../districts/fnc.html'>North Carolina</a> <a href='../districts/ne.html'>New England</a> <a href='../districts/ont.html'>Ontario</a> <a href='../districts/pch.html'>Peachtree</a> <a href='../districts/pnw.html'>Pacific Northwest</a> <a href='../districts/fit.html'>Texas</a><br/>
-
+        {% include 'includes/nav.html' %}
         <h2>{{ district_stats.display_name }} District</h2>
         <table class="stats-table">
             <tr class="stats-table-header">
@@ -82,26 +65,8 @@
             </tr>
             {% endfor %}
         </table>
-
-        <p>
-            <font size='2'>Written by</font><br/><a href='https://www.chiefdelphi.com/u/Brandon_L/'>Brandon Liatys</a> / <a href='https://www.thebluealliance.com/team/1403'>frc1403</a><br/><br/>
-            <font size='2'>Based on algorithm by</font><br/><a href='https://www.chiefdelphi.com/u/agpapa/'>Antonio Papa</a> / <a href='https://www.thebluealliance.com/team/2590'>frc2590</a><br/><br/>
-        </p>
         
-        <p><small>Powered by</small><br>
-        <a href="https://www.thebluealliance.com/">The Blue Alliance</a></p>
-        
-        <p>
-            <a href="https://www.thethriftybot.com/">
-                <img src="https://le-cdn.website-editor.net/fa58a7b7b8454a6493c249d451adf7aa/dms3rep/multi/opt/thriftbot-6b06aa34-1920w.png" alt="Thriftybot" width="200">
-            </a>
-        </p>
-        
-        <p>
-            <a href="https://www.firstinspires.org/">
-                <img src="../../static/images/FIRST_Horz_RGB.png" alt="FIRST Robotics" width="100">
-            </a>
-        </p>
+        {% include 'includes/footer.html' %}
     </div>
 </body>
 </html>

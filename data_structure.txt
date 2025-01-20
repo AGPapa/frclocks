@@ -1,0 +1,143 @@
+-- Lookups --
+
+district_lookup:
+district_key: varchar
+display_name: varchar
+dcmp_capacity: int
+
+qual_points_lookup:
+event_size: int
+team_rank: int
+qual_points: int
+
+
+-- Raw Data --
+
+events
+district_key: varchar
+event_key: varchar
+name: varchar
+event_type: varchar
+start_date: date
+end_date: date
+
+event_teams
+team_key: varchar
+event_key: varchar
+
+matches:
+match_key: varchar
+event_key: varchar
+comp_level: varchar
+match_number: int
+winning_alliance: varchar
+red_1_key: varchar
+red_2_key: varchar
+red_3_key: varchar
+blue_1_key: varchar
+blue_2_key: varchar
+blue_3_key: varchar
+
+alliances:
+event_key: varchar
+alliance_name: varchar
+captain_key: varchar
+first_selection_key: varchar
+second_selection_key: varchar
+backup_key: varchar
+
+awards:
+event_key: varchar
+award_type: varchar
+team_key: varchar
+
+qual_points_lookup:
+event_size: int
+team_rank: int
+qual_points: int
+
+event_points:
+event_key: varchar
+team_key: varchar
+points: int
+
+district_rankings:
+district_key: varchar
+team_key: varchar
+rank: int
+points: int
+rookie_bonus: int
+
+
+-- Transformed Data --
+
+event_states:
+event_key: varchar
+district_key: varchar
+name: varchar
+event_type: varchar
+start_date: date
+end_date: date
+event_state: varchar
+color: varchar
+
+impact_award_winners:
+event_key: varchar
+team_key: varchar
+
+district_rankings_without_impact:
+team_key: varchar
+district_key: varchar
+rank: int
+points: int
+rookie_bonus: int
+inflated_points: int
+active_team_rank: int
+events_remaining: int
+
+event_points_remaining:
+event_key: varchar
+team_count: int
+award_points: int
+elimination_points: int
+alliance_selection_points: int
+quals_adjusted: int
+points_remaining: int
+
+district_points_remaining:
+district_key: varchar
+points_remaining: int
+
+teams_to_pass:
+district_key: varchar
+team_key: varchar
+points: int
+inflated_points: int
+rank: int
+teams_to_pass: int
+
+following_teams:
+team_key: varchar
+district_key: varchar
+points: int
+teams_to_pass: int
+following_team_key: varchar
+following_team_rank: int
+following_team_points: int
+following_team_inflated_points: int
+following_team_order: int
+following_team_points_needed_to_pass: int
+
+lock_status:
+team_key: varchar
+district_key: varchar
+rank: int
+total_points: int
+total_inflated_points: int
+event1_points: int
+event2_points: int
+rookie_bonus: int
+total_points_to_pass: int
+total_points_remaining: int
+lock_status: varchar
+color: varchar

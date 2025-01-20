@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FRCLocks.com</title>
+    
+    <!-- Global Site Tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_tracking_id }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ ga_tracking_id }}');
+    </script>
+    
+    <link rel="stylesheet" href="../../static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>FRC District Championship Locks</h1>
+        <a href='../districts/chs.html'>Chesapeake</a> <a href='../districts/fim.html'>Michigan</a> <a href='../districts/fin.html'>Indiana</a> <a href='../districts/isr.html'>Israel</a> <a href='../districts/fma.html'>Mid-Atlantic</a> <a href='../districts/fnc.html'>North Carolina</a> <a href='../districts/ne.html'>New England</a> <a href='../districts/ont.html'>Ontario</a> <a href='../districts/pch.html'>Peachtree</a> <a href='../districts/pnw.html'>Pacific Northwest</a> <a href='../districts/fit.html'>Texas</a><br/>
+
+        <h2>{{ lock_status.team_key }}</h2>
+        <table class="team-points-table">
+            <tr class="team-points-header">
+                <th>Description</th>
+                <th style="width: 75px;">Points</th>
+            </tr>
+            <tr>
+                <td class="col-description">Points + 4pts per unplayed event (if any)</td>
+                <td class="col-points" align="right">{{ lock_status.total_inflated_points }}</td>
+            </tr>
+            <tr>
+                <td class="col-description">Points needed by teams below to pass {{ lock_status.team_key }}</td>
+                <td class="col-points" align="right">{{ lock_status.total_points_to_pass }}</td>
+            </tr>
+            <tr>
+                <td class="col-description">Points remaining in the district</td>
+                <td class="col-points" align="right">{{ lock_status.total_points_remaining }}</td>
+            </tr>
+            <tr>
+                <td class="col-description">% of Lock Achieved (Points to pass/points remaining)</td>
+                <td class="col-points" align="right">{{ lock_status.lock_status }}</td>
+            </tr>
+        </table>
+
+        <h2>Points to Pass</h2>
+        <table class="points-to-tie-table">
+            <tr class="points-to-tie-header">
+                <th>Rank</th>
+                <th>Team</th>
+                <th>Adj. Pts</th>
+                <th>Pts to Tie</th>
+            </tr>
+            {% for following_team in following_teams %}
+            <tr>
+                <td class="col-rank" align="right">{{ following_team.following_team_rank }}</td>
+                <td class="col-team" align="center"><b><a href="https://www.thebluealliance.com/team/{{ following_team.following_team_number }}" target="_blank">{{ following_team.following_team_key }}</a></b></td>
+                <td class="col-points" align="right">{{ following_team.inflated_points_total }}</td>
+                <td class="col-points" align="right">{{ following_team.points_to_pass }}</td>
+            </tr>
+            {% endfor %}
+
+        <tr bgcolor='FFD966'>
+            <td colspan="3">
+                <b>Total</b>
+            </td>
+            <td align="right">
+                <b>{{ lock_status.total_points_to_pass }}</b>
+            </td>
+        </tr>
+        </table>
+
+
+        <p>
+            <font size='2'>Written by</font><br/><a href='https://www.chiefdelphi.com/u/Brandon_L/'>Brandon Liatys</a> / <a href='https://www.thebluealliance.com/team/1403'>frc1403</a><br/><br/>
+            <font size='2'>Based on algorithm by</font><br/><a href='https://www.chiefdelphi.com/u/agpapa/'>Antonio Papa</a> / <a href='https://www.thebluealliance.com/team/2590'>frc2590</a><br/><br/>
+        </p>
+        
+        <p><small>Powered by</small><br>
+        <a href="https://www.thebluealliance.com/">The Blue Alliance</a></p>
+        
+        <p>
+            <a href="https://www.thethriftybot.com/">
+                <img src="https://le-cdn.website-editor.net/fa58a7b7b8454a6493c249d451adf7aa/dms3rep/multi/opt/thriftbot-6b06aa34-1920w.png" alt="Thriftybot" width="200">
+            </a>
+        </p>
+        
+        <p>
+            <a href="https://www.firstinspires.org/">
+                <img src="../../static/images/FIRST_Horz_RGB.png" alt="FIRST Robotics" width="100">
+            </a>
+        </p>
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+        
+        

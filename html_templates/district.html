@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FRCLocks.com</title>
+    
+    <!-- Global Site Tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_tracking_id }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ ga_tracking_id }}');
+    </script>
+    
+    <link rel="stylesheet" href="../../static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>FRC District Championship Locks</h1>
+        <a href='../districts/chs.html'>Chesapeake</a> <a href='../districts/fim.html'>Michigan</a> <a href='../districts/fin.html'>Indiana</a> <a href='../districts/isr.html'>Israel</a> <a href='../districts/fma.html'>Mid-Atlantic</a> <a href='../districts/fnc.html'>North Carolina</a> <a href='../districts/ne.html'>New England</a> <a href='../districts/ont.html'>Ontario</a> <a href='../districts/pch.html'>Peachtree</a> <a href='../districts/pnw.html'>Pacific Northwest</a> <a href='../districts/fit.html'>Texas</a><br/>
+
+        <h2>{{ district_stats.display_name }} District</h2>
+        <table class="stats-table">
+            <tr class="stats-table-header">
+                <th style="width: 290px;">Statistic</th>
+                <th style="width: 60px;">Value</th>
+            </tr>
+            <tr>
+                <td class="col-statistic">Points Remaining in the District</td>
+                <td class="col-value">{{ district_stats.points_remaining }}</td>
+            </tr>
+            <tr>
+                <td class="col-statistic">Available District Champs Spots</td>
+                <td class="col-value">{{ district_stats.dcmp_capacity }}</td>
+            </tr>
+        </table>
+
+        <h2>District Events</h2>
+        <table class="events-table">
+            <tr class="event-table-header">
+                <th>Event</th>
+                <th style="width: 130px;">Status</th>
+                <th style="width: 90px;"># Teams</th>
+                <th style="width: 125px;">Pts Available</th>
+            </tr>
+            {% for event in events %}
+            <tr style="background-color: #{{ event.color }}">
+                <td class="col-event"><a href="https://www.thebluealliance.com/event/{{ event.key }}">{{ event.name }}</a></td>
+                <td class="col-status">{{ event.status }}</td>
+                <td class="col-teams">{{ event.team_count }}</td>
+                <td class="col-points"><a href="../events/{{ event.key }}.html">{{ event.points_remaining }}</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h2>District Rankings</h2>
+        <table class="rankings-table">
+            <tr class="rankings-table-header">
+                <th style="width: 60px;">Rank</th>
+                <th style="width: 100px;">Team</th>
+                <th style="width: 100px;">Event 1</th>
+                <th style="width: 100px;">Event 2</th>
+                <th style="width: 100px;">Age Bonus</th>
+                <th style="width: 100px;">Total</th>
+                <th style="width: 100px;">Locked?</th>
+            </tr>
+            {% for team in rankings %}
+            <tr style="background-color: #{{ team.color }}">
+                <td class="col-rank">{{ team.rank }}</td>
+                <td class="col-team"><a href="https://www.thebluealliance.com/team/{{ team.team_number }}">{{ team.team_key }}</a></td>
+                <td class="col-event1">{{ team.event1_points or 0 }}</td>
+                <td class="col-event2">{{ team.event2_points or 0 }}</td>
+                <td class="col-age-bonus">{{ team.rookie_bonus }}</td>
+                <td class="col-total">{{ team.total_points }}</td>
+                {% if team.lock_status != "0%" and team.lock_status != "-" and team.lock_status != "Impact" %}
+                <td class="col-locked"><a href="../teams/{{ team.team_key }}.html">{{ team.lock_status }}</a></td>
+                {% else %}
+                <td class="col-locked">{{ team.lock_status }}</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
+
+        <p>
+            <font size='2'>Written by</font><br/><a href='https://www.chiefdelphi.com/u/Brandon_L/'>Brandon Liatys</a> / <a href='https://www.thebluealliance.com/team/1403'>frc1403</a><br/><br/>
+            <font size='2'>Based on algorithm by</font><br/><a href='https://www.chiefdelphi.com/u/agpapa/'>Antonio Papa</a> / <a href='https://www.thebluealliance.com/team/2590'>frc2590</a><br/><br/>
+        </p>
+        
+        <p><small>Powered by</small><br>
+        <a href="https://www.thebluealliance.com/">The Blue Alliance</a></p>
+        
+        <p>
+            <a href="https://www.thethriftybot.com/">
+                <img src="https://le-cdn.website-editor.net/fa58a7b7b8454a6493c249d451adf7aa/dms3rep/multi/opt/thriftbot-6b06aa34-1920w.png" alt="Thriftybot" width="200">
+            </a>
+        </p>
+        
+        <p>
+            <a href="https://www.firstinspires.org/">
+                <img src="../../static/images/FIRST_Horz_RGB.png" alt="FIRST Robotics" width="100">
+            </a>
+        </p>
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+        
+        

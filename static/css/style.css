@@ -1,0 +1,230 @@
+:root {
+    /* Colors */
+    --primary-text: #202020;
+    --hover-text: #404040;
+    --background: #888888;
+    --table-header: black;
+    --table-header-text: white;
+    --cell-background: #FFD966;
+}
+
+/* Base styles */
+body {
+    background-color: var(--background);
+    font-family: Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Links */
+a:link, a:visited {
+    color: var(--primary-text);
+}
+
+a:hover {
+    color: var(--hover-text);
+}
+
+/* Layout */
+.container {
+    text-align: center;
+    margin-top: 0;
+}
+
+/* Common table styles */
+table, th, td {
+    border: 1px solid black;
+    border-spacing: 0;
+}
+
+/* Stats table */
+.stats-table {
+    margin: 0 auto;
+    width: 350px;
+    table-layout: fixed;
+    background-color: var(--table-header);
+    color: var(--table-header-text);
+}
+
+.stats-table-header {
+    font-weight: bold;
+    text-align: center;
+    background-color: var(--table-header);
+    color: var(--table-header-text);
+}
+
+.col-statistic {
+    width: 290px;
+    background-color: var(--cell-background);
+    color: black;
+}
+
+.col-value {
+    width: 60px;
+    text-align: right;
+    background-color: var(--cell-background);
+    color: black;
+}
+
+/* Events table */
+.events-table {
+    margin: 0 auto;
+    width: 700px;
+    table-layout: fixed;
+}
+
+.event-table-header {
+    font-weight: bold;
+    text-align: center;
+    background-color: var(--table-header);
+    color: var(--table-header-text);
+}
+
+.events-table [class^="col-"] {
+    color: black;
+}
+
+.events-table .col-event,
+.events-table .col-status {
+    text-align: center;
+}
+
+
+.events-table .col-teams,
+.events-table .col-points {
+    text-align: right;
+}
+
+/* Rankings table */
+.rankings-table {
+    margin: 0 auto;
+    width: 700px;
+    table-layout: fixed;
+    background-color: var(--table-header);
+    color: var(--table-header-text);
+}
+
+.rankings-table-header {
+    font-weight: bold;
+    text-align: center;
+    background-color: var(--table-header);
+    color: var(--table-header-text);
+}
+
+.rankings-table [class^="col-"] {
+    color: black;
+}
+
+.rankings-table .col-rank,
+.rankings-table .col-event1,
+.rankings-table .col-event2,
+.rankings-table .col-age-bonus,
+.rankings-table .col-total {
+    text-align: right;
+}
+
+.rankings-table .col-team,
+.rankings-table .col-locked {
+    text-align: center;
+}
+
+/* Points Remaining table */
+.points-remaining-table {
+    margin: 0 auto;
+    width: 700px;
+    table-layout: fixed;
+}
+
+.points-remaining-header {
+    font-weight: bold;
+    text-align: center;
+    background-color: var(--table-header);
+    color: var(--table-header-text);
+}
+
+.points-remaining-table [class^="col-"] {
+    color: black;
+    background-color: var(--cell-background);
+}
+
+.points-remaining-table .col-description {
+    text-align: center;
+    background-color: var(--cell-background);
+}
+
+.points-remaining-table .col-points {
+    text-align: right;
+    background-color: var(--cell-background);
+}
+
+
+/* Team Points table */
+.team-points-table {
+    margin: 0 auto;
+    width: 700px;
+    table-layout: fixed;
+}
+
+.team-points-header {
+    font-weight: bold;
+    text-align: center;
+    background-color: var(--table-header);
+    color: var(--table-header-text);
+}
+
+.team-points-table [class^="col-"] {
+    color: black;
+    background-color: var(--cell-background);
+}
+
+.team-points-table .col-description {
+    text-align: center;
+    background-color: var(--cell-background);
+}
+
+.team-points-table .col-points {
+    text-align: right;
+    background-color: var(--cell-background);
+}
+
+/* Points to Tie table */
+.points-to-tie-table {
+    margin: 0 auto;
+    width: 450px;
+    table-layout: fixed;
+}
+
+.points-to-tie-header {
+    font-weight: bold;
+    text-align: center;
+    background-color: black;
+    color: white;
+}
+
+.points-to-tie-table [class^="col-"] {
+    color: black;
+    background-color: var(--cell-background);
+}
+
+.points-to-tie-table .col-description {
+    text-align: center;
+    background-color: var(--cell-background);
+}
+
+.points-to-tie-table .col-points {
+    text-align: right;
+    background-color: var(--cell-background);
+}
+
+.points-to-tie-table .col-rank {
+    text-align: right;
+    background-color: var(--cell-background);
+}
+
+.points-to-tie-table .col-team {
+    text-align: center;
+    background-color: var(--cell-background);
+}

@@ -1,0 +1,14 @@
+# Python specific
+__pycache__/
+*.py[cod]
+*.so
+.Python
+env/
+.env
+venv/
+ENV/
+.DS_Store
+
+# Project specific directories
+cache/
+output_html/

@@ -11,7 +11,8 @@ def generate_homepage():
 
     html_content = template.render(**context)
 
-    with open("output_html/homepage/homepage.html", "w") as file:
+    os.makedirs("tmp/output_html/homepage", exist_ok=True)
+    with open("tmp/output_html/homepage/homepage.html", "w") as file:
         file.write(html_content)
 
 def generate_district_page(district_key: str, con: duckdb.DuckDBPyConnection):
@@ -69,7 +70,8 @@ def generate_district_page(district_key: str, con: duckdb.DuckDBPyConnection):
 
     html_content = template.render(**context)
 
-    with open(f"output_html/districts/{district_key[4:]}.html", "w") as file:
+    os.makedirs("tmp/output_html/districts", exist_ok=True)
+    with open(f"tmp/output_html/districts/{district_key[4:]}.html", "w") as file:
         file.write(html_content)
 
 def generate_event_page(event_key: str, con: duckdb.DuckDBPyConnection):
@@ -105,7 +107,8 @@ def generate_event_page(event_key: str, con: duckdb.DuckDBPyConnection):
 
     html_content = template.render(**context)
 
-    with open(f"output_html/events/{event_key}.html", "w") as file:
+    os.makedirs("tmp/output_html/events", exist_ok=True)
+    with open(f"tmp/output_html/events/{event_key}.html", "w") as file:
         file.write(html_content)
 
 def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
@@ -141,7 +144,8 @@ def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
 
     html_content = template.render(**context)
 
-    with open(f"output_html/teams/{team_key}.html", "w") as file:
+    os.makedirs("tmp/output_html/teams", exist_ok=True)
+    with open(f"tmp/output_html/teams/{team_key}.html", "w") as file:
         file.write(html_content)
 
 

@@ -1,6 +1,6 @@
 # Python specific
 __pycache__/
-*.py[cod]
+.py[cod]
 *.so
 .Python
 env/
@@ -11,4 +11,6 @@ ENV/
 
 # Project specific directories
 cache/
-output_html/
+tmp/
+deployment/
+lambda_deployment.zip

@@ -11,7 +11,7 @@ ENV/
 
 # Project specific directories
 cache/
-tmp/
+output_html/
 deployment/
 layer/
 lambda_deployment.zip

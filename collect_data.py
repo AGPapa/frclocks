@@ -8,10 +8,14 @@ load_dotenv()
 
 TBA_PREFIX = "https://www.thebluealliance.com/api/v3/"
 TBA_AUTH_KEY = os.getenv('TBA_AUTH_KEY')
-
+ENV = os.getenv('ENV')
 
 def get_tba(url: str):
-    file_path = 'cache/tba/' + url.replace('/', '-') + ".json"
+    if ENV != "DEV":
+        file_path = '/tmp/cache/tba/' + url.replace('/', '-') + ".json"
+    else:
+        file_path = 'cache/tba/' + url.replace('/', '-') + ".json"
+
     folder_path = os.path.dirname(file_path)
 
     if not os.path.exists(folder_path):

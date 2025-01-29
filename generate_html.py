@@ -4,6 +4,9 @@ import os
 import numpy as np
 import pandas as pd
 
+ENV = os.getenv('ENV')
+DIR = "/tmp/output_html" if ENV != "DEV" else "output_html"
+
 def generate_homepage():
     env = Environment(loader=FileSystemLoader('html_templates'))
     template = env.get_template('homepage.html')
@@ -11,8 +14,8 @@ def generate_homepage():
 
     html_content = template.render(**context)
 
-    os.makedirs("tmp/output_html/homepage", exist_ok=True)
-    with open("tmp/output_html/homepage/homepage.html", "w") as file:
+    os.makedirs(f"{DIR}/homepage", exist_ok=True)
+    with open(f"{DIR}/homepage/homepage.html", "w") as file:
         file.write(html_content)
 
 def generate_district_page(district_key: str, con: duckdb.DuckDBPyConnection):
@@ -70,8 +73,8 @@ def generate_district_page(district_key: str, con: duckdb.DuckDBPyConnection):
 
     html_content = template.render(**context)
 
-    os.makedirs("tmp/output_html/districts", exist_ok=True)
-    with open(f"tmp/output_html/districts/{district_key[4:]}.html", "w") as file:
+    os.makedirs(f"{DIR}/districts", exist_ok=True)
+    with open(f"{DIR}/districts/{district_key[4:]}.html", "w") as file:
         file.write(html_content)
 
 def generate_event_page(event_key: str, con: duckdb.DuckDBPyConnection):
@@ -107,8 +110,8 @@ def generate_event_page(event_key: str, con: duckdb.DuckDBPyConnection):
 
     html_content = template.render(**context)
 
-    os.makedirs("tmp/output_html/events", exist_ok=True)
-    with open(f"tmp/output_html/events/{event_key}.html", "w") as file:
+    os.makedirs(f"{DIR}/events", exist_ok=True)
+    with open(f"{DIR}/events/{event_key}.html", "w") as file:
         file.write(html_content)
 
 def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
@@ -144,8 +147,8 @@ def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
 
     html_content = template.render(**context)
 
-    os.makedirs("tmp/output_html/teams", exist_ok=True)
-    with open(f"tmp/output_html/teams/{team_key}.html", "w") as file:
+    os.makedirs(f"{DIR}/teams", exist_ok=True)
+    with open(f"{DIR}/teams/{team_key}.html", "w") as file:
         file.write(html_content)
 
 

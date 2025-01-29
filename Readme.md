@@ -19,10 +19,12 @@ The final HTML is intended to be served as static files from an S3 bucket.
 
 The data structure of the SQL database is defined in `data_structure.txt`.
 
-## Deployment
-
-The deployment is done using the `lambda_deploy_script.sh` file. It creates a zip file that can be uploaded to an AWS Lambda function.
-
 ## Development
 
-Requirements can be installed using the `requirements.txt` file. The code can be run locally using the `main.py` file.
+Create a ".env" file in the root directory with a "TBA_AUTH_KEY" variable. You can get a key from https://www.thebluealliance.com/account.
+
+Requirements can be installed with `pip install -r requirements.txt`. The code can be run with `python main.py`.
+
+## Deployment
+
+The deployment is done using the `lambda_deploy_script.sh` file. It creates a function zip file that can be uploaded to an AWS Lambda function, along with a layer zip file for the dependencies.

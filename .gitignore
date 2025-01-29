@@ -13,4 +13,6 @@ ENV/
 cache/
 tmp/
 deployment/
+layer/
 lambda_deployment.zip
+layer.zip

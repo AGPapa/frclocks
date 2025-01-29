@@ -1,9 +1,21 @@
+#!/bin/bash
+rm -rf deployment
 mkdir deployment
-pip install -r requirements.txt --target ./deployment
+mkdir deployment/transforms
+mkdir deployment/lookups
+mkdir deployment/html_templates
 cp *.py ./deployment/
-cp transformations/*.sql ./deployment/
-cp lookup_tables/*.csv ./deployment/
-cp html_templates/*.html ./deployment/
-cp requirements.txt ./deployment/
+cp transforms/*.sql ./deployment/transforms/
+cp lookups/*.csv ./deployment/lookups/
+cp html_templates/*.html ./deployment/html_templates/
 cd deployment
 zip -r ../lambda_deployment.zip .
+cd ..
+
+rm -rf layer
+mkdir -p layer/python/lib/python3.13/site-packages
+docker run --rm -v "$PWD":/var/task python:3.13 pip install -r /var/task/requirements.txt -t /var/task/layer/python/lib/python3.13/site-packages
+find layer -type d \( -name "tests" -o -name "__pycache__" -o -name "docs" -o -name "*.dist-info" \) -exec rm -rf {} +
+cd layer
+zip -r ../layer.zip python
+cd ..

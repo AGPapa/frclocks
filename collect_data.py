@@ -12,8 +12,12 @@ TBA_AUTH_KEY = os.getenv('TBA_AUTH_KEY')
 
 def get_tba(url: str):
     file_path = 'cache/tba/' + url.replace('/', '-') + ".json"
+    folder_path = os.path.dirname(file_path)
 
-    if (os.path.isfile(file_path)):
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
+    if os.path.isfile(file_path):
         with open(file_path, 'r') as file:
             return json.load(file)
     else:

@@ -21,9 +21,14 @@ The data structure of the SQL database is defined in `data_structure.txt`.
 
 ## Development
 
-Create a ".env" file in the root directory with a "TBA_AUTH_KEY" variable. You can get a key from https://www.thebluealliance.com/account.
+Create a ".env" file in the root directory with the following variables:
 
-Requirements can be installed with `pip install -r requirements.txt`. The code can be run with `python main.py`.
+- TBA_AUTH_KEY: Your TBA API key. You can get a key from https://www.thebluealliance.com/account.
+- ENV: Set this to "DEV" for local development.
+
+The project runs with python 3.13, and requirements can be installed with `pip install -r requirements.txt`. The code can be run with `python main.py`.
+
+The code will create static html files in the "output_html" directory.
 
 ## Deployment
 

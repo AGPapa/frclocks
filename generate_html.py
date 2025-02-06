@@ -3,7 +3,9 @@ from jinja2 import Environment, FileSystemLoader
 import os
 import numpy as np
 import pandas as pd
+from dotenv import load_dotenv
 
+load_dotenv()
 ENV = os.getenv('ENV')
 DIR = "/tmp/output_html" if ENV != "DEV" else "output_html"
 

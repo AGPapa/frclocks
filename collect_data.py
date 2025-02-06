@@ -1,8 +1,10 @@
 import os
 import json
 import duckdb
+import time
 from requests import Session
 from dotenv import load_dotenv
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 load_dotenv()
 
@@ -11,17 +13,14 @@ TBA_AUTH_KEY = os.getenv('TBA_AUTH_KEY')
 ENV = os.getenv('ENV')
 
 def get_tba(url: str):
-    if ENV != "DEV":
-        file_path = '/tmp/cache/tba/' + url.replace('/', '-') + ".json"
-    else:
-        file_path = 'cache/tba/' + url.replace('/', '-') + ".json"
+    file_path = 'cache/tba/' + url.replace('/', '-') + ".json"
 
-    folder_path = os.path.dirname(file_path)
+    folder_path = os.path.dirname('cache/tba/' + url.replace('/', '-') + '.json')
 
-    if not os.path.exists(folder_path):
+    if ENV == "DEV" and not os.path.exists(folder_path):
         os.makedirs(folder_path)
 
-    if os.path.isfile(file_path):
+    if ENV == "DEV" and os.path.isfile(file_path):
         with open(file_path, 'r') as file:
             return json.load(file)
     else:
@@ -30,8 +29,9 @@ def get_tba(url: str):
         print(TBA_PREFIX + url)
         response = session.get(TBA_PREFIX + url)
         if response.status_code == 200:
-            with open(file_path, 'w') as file:
-                file.write(json.dumps(response.json()))
+            if ENV == "DEV":
+                with open(file_path, 'w') as file:
+                    file.write(json.dumps(response.json()))
             return response.json()
         else:
             raise "TBA Call Failed Error"
@@ -112,14 +112,19 @@ def save_district_rankings(district_key: str, con: duckdb.DuckDBPyConnection):
         con.execute("INSERT INTO district_rankings (district_key, team_key, rank, points, rookie_bonus) VALUES (?, ?, ?, ?, ?)", (district_key, ranking["team_key"], ranking["rank"], ranking["point_total"], ranking["rookie_bonus"]))
 
 
+def collect_event_data(event_key: str, con: duckdb.DuckDBPyConnection):
+    save_event_teams(event_key, con)
+    save_matches(event_key, con)
+    save_alliances(event_key, con)
+    save_awards(event_key, con)
+    save_event_points(event_key, con)
+
 def collect_data(district_key: str, con: duckdb.DuckDBPyConnection):
     event_keys = save_events(district_key, con)
-    for event_key in event_keys:
-        save_event_teams(event_key, con)
-        save_matches(event_key, con)
-        save_alliances(event_key, con)
-        save_awards(event_key, con)
-        save_event_points(event_key, con)
+    with ThreadPoolExecutor() as executor:
+        futures = [executor.submit(collect_event_data, event_key, con) for event_key in event_keys]
+        for future in as_completed(futures):
+            future.result()
     save_district_rankings(district_key, con)
 
 

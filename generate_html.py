@@ -1,13 +1,33 @@
 import duckdb
 from jinja2 import Environment, FileSystemLoader
 import os
-import numpy as np
-import pandas as pd
 from dotenv import load_dotenv
+import boto3
+from io import StringIO
 
 load_dotenv()
 ENV = os.getenv('ENV')
-DIR = "/tmp/output_html" if ENV != "DEV" else "output_html"
+DIR = "output_html"
+S3_BUCKET = os.getenv('S3_BUCKET')
+
+def write_file(content: str, path: str):
+    if ENV == "PROD":
+        s3 = boto3.client('s3')
+        s3.put_object(
+            Bucket=S3_BUCKET,
+            Key=path,
+            Body=content,
+            ContentType='text/html'
+        )
+    else:
+        os.makedirs(os.path.dirname(f"{DIR}/{path}"), exist_ok=True)
+        with open(f"{DIR}/{path}", "w") as file:
+            file.write(content)
+
+def duckdb_result_to_dict(query: str, con: duckdb.DuckDBPyConnection):
+    result = con.execute(query)
+    columns = [col[0] for col in result.description]
+    return [dict(zip(columns, row)) for row in result.fetchall()]
 
 def generate_homepage():
     env = Environment(loader=FileSystemLoader('html_templates'))
@@ -15,17 +35,14 @@ def generate_homepage():
     context = {}
 
     html_content = template.render(**context)
-
-    os.makedirs(f"{DIR}/homepage", exist_ok=True)
-    with open(f"{DIR}/homepage/homepage.html", "w") as file:
-        file.write(html_content)
+    write_file(html_content, "homepage/homepage.html")
 
 def generate_district_page(district_key: str, con: duckdb.DuckDBPyConnection):
     env = Environment(loader=FileSystemLoader('html_templates'))
     template = env.get_template('district.html')
 
     # Get district data from database
-    rankings = con.execute(f"""
+    rankings = duckdb_result_to_dict(f"""
         SELECT 
             rank,
             SUBSTRING(team_key, 4) AS team_number,
@@ -39,10 +56,10 @@ def generate_district_page(district_key: str, con: duckdb.DuckDBPyConnection):
         FROM lock_status 
         WHERE district_key = '{district_key}'
         ORDER BY rank
-    """).df().to_dict('records')
+    """, con)
 
     # Get district events data
-    events = con.execute(f"""
+    events = duckdb_result_to_dict(f"""
         SELECT 
             event_states.event_key AS key,
             event_states.name,
@@ -54,10 +71,10 @@ def generate_district_page(district_key: str, con: duckdb.DuckDBPyConnection):
         JOIN event_points_remaining ON event_states.event_key = event_points_remaining.event_key
         WHERE event_states.district_key = '{district_key}'
         ORDER BY event_states.start_date, event_states.name
-    """).df().to_dict('records')
+    """, con)
 
     # Get district summary stats
-    stats = con.execute(f"""
+    stats = duckdb_result_to_dict(f"""
         SELECT 
             district_points_remaining.points_remaining,
             district_lookup.dcmp_capacity,
@@ -65,7 +82,7 @@ def generate_district_page(district_key: str, con: duckdb.DuckDBPyConnection):
         FROM district_points_remaining
         JOIN district_lookup ON district_points_remaining.district_key = district_lookup.district_key
         WHERE district_points_remaining.district_key = '{district_key}'
-    """).df().to_dict('records')[0]
+    """, con)[0]
 
     context = {
         'rankings': rankings,
@@ -74,27 +91,24 @@ def generate_district_page(district_key: str, con: duckdb.DuckDBPyConnection):
     }
 
     html_content = template.render(**context)
-
-    os.makedirs(f"{DIR}/districts", exist_ok=True)
-    with open(f"{DIR}/districts/{district_key[4:]}.html", "w") as file:
-        file.write(html_content)
+    write_file(html_content, f"districts/{district_key[4:]}.html")
 
 def generate_event_page(event_key: str, con: duckdb.DuckDBPyConnection):
     env = Environment(loader=FileSystemLoader('html_templates'))
     template = env.get_template('event.html')
 
     # Get event data
-    event = con.execute(f"""
+    event = duckdb_result_to_dict(f"""
         SELECT 
             event_states.name,
             event_states.event_state AS status,
             event_states.color
         FROM event_states
         WHERE event_states.event_key = '{event_key}'
-    """).df().to_dict('records')[0]
+    """, con)[0]
 
     # Get points remaining data
-    points_remaining = con.execute(f"""
+    points_remaining = duckdb_result_to_dict(f"""
         SELECT 
             quals_adjusted,
             alliance_selection_points,
@@ -103,7 +117,7 @@ def generate_event_page(event_key: str, con: duckdb.DuckDBPyConnection):
             points_remaining
         FROM event_points_remaining
         WHERE event_key = '{event_key}'
-    """).df().to_dict('records')[0]
+    """, con)[0]
 
     context = {
         'event': event,
@@ -111,15 +125,12 @@ def generate_event_page(event_key: str, con: duckdb.DuckDBPyConnection):
     }
 
     html_content = template.render(**context)
-
-    os.makedirs(f"{DIR}/events", exist_ok=True)
-    with open(f"{DIR}/events/{event_key}.html", "w") as file:
-        file.write(html_content)
+    write_file(html_content, f"events/{event_key}.html")
 
 def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
     env = Environment(loader=FileSystemLoader('html_templates'))
     template = env.get_template('team.html')
-    lock_status = con.execute(f"""
+    lock_status = duckdb_result_to_dict(f"""
         SELECT 
             team_key,
             total_inflated_points,
@@ -128,9 +139,9 @@ def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
             lock_status
         FROM lock_status
         WHERE team_key = '{team_key}'
-    """).df().to_dict('records')[0]
+    """, con)[0]
 
-    following_teams = con.execute(f"""
+    following_teams = duckdb_result_to_dict(f"""
         SELECT 
             following_team_key,
             SUBSTRING(following_team_key, 4) AS following_team_number,
@@ -140,7 +151,7 @@ def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
         FROM following_teams
         WHERE team_key = '{team_key}'
         ORDER BY following_team_rank ASC
-    """).df().to_dict('records')
+    """, con)
 
     context = {
         'lock_status': lock_status,
@@ -148,19 +159,18 @@ def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
     }
 
     html_content = template.render(**context)
-
-    os.makedirs(f"{DIR}/teams", exist_ok=True)
-    with open(f"{DIR}/teams/{team_key}.html", "w") as file:
-        file.write(html_content)
+    write_file(html_content, f"teams/{team_key}.html")
 
 
 def generate_html(district_key: str, con: duckdb.DuckDBPyConnection):
     generate_homepage()
     generate_district_page(district_key, con)
-    events = con.execute(f"SELECT event_key FROM events WHERE district_key = '{district_key}' and event_type = 'District'").df().to_dict('records')
+
+    events = duckdb_result_to_dict(f"SELECT event_key FROM events WHERE district_key = '{district_key}' and event_type = 'District'", con)
     for event in events:
         generate_event_page(event['event_key'], con)
-    teams = con.execute(f"SELECT team_key FROM district_rankings WHERE district_key = '{district_key}'").df().to_dict('records')
+
+    teams = duckdb_result_to_dict(f"SELECT team_key FROM district_rankings WHERE district_key = '{district_key}'", con)
     for team in teams:
         generate_team_page(team['team_key'], con)
 

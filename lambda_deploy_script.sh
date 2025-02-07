@@ -16,8 +16,8 @@ cd ..
 
 rm -rf layer
 mkdir -p layer/python/lib/python3.13/site-packages
-docker run --rm -v "$PWD":/var/task python:3.13 pip install -r /var/task/requirements.txt -t /var/task/layer/python/lib/python3.13/site-packages
-find layer -type d \( -name "tests" -o -name "__pycache__" -o -name "docs" -o -name "*.dist-info" \) -exec rm -rf {} +
+docker run --rm -v "$PWD":/var/task python:3.13 pip install --no-cache-dir -r /var/task/requirements.txt -t /var/task/layer/python/lib/python3.13/site-packages
+find layer -type d \( -name "tests" -o -name "__pycache__" -o -name "*.dist-info" \) -exec rm -rf {} +
 cd layer
 zip -r ../layer.zip python
 cd ..

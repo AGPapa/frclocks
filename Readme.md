@@ -1,6 +1,6 @@
 # FRC Locks
 
-This program creates the html files for the FRC Locks website. It pulls data from the TBA API, runs a series of SQL transformations, and then creates the html files.
+This program creates the html files for the FRC Locks website. It pulls data from [The Blue Alliance](https://www.thebluealliance.com/) API, runs a series of SQL transformations, and then creates the html files.
 
 ## Pipeline
 
@@ -21,14 +21,19 @@ The data structure of the SQL database is defined in `data_structure.txt`.
 
 ## Development
 
-Create a ".env" file in the root directory with the following variables:
-
-- TBA_AUTH_KEY: Your TBA API key. You can get a key from https://www.thebluealliance.com/account.
-- ENV: Set this to "DEV" for local development.
-
-The project runs with python 3.13, and requirements can be installed with `pip install -r requirements.txt`. The code can be run with `python main.py`.
-
-The code will create static html files in the "output_html" directory.
+1. Have Python 3+ (can be in a docker container)
+2. Create a `.env` file in the root directory based on `.env.example`, and set the following variables:
+    - `TBA_AUTH_KEY`: Your TBA API key from https://www.thebluealliance.com/account.
+    - `ENV`: Set to `DEV` for local development.
+3. Install dependencies:
+   ```sh
+   pip install -r requirements.txt
+   ```
+4. Run the script:
+   ```sh
+   python main.py
+   ```
+   The generated HTML files will be saved in the `output_html` directory.
 
 ## Deployment
 

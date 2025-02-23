@@ -40,6 +40,14 @@ def write_static_files():
                 Body=css_content,
                 ContentType='text/css'
             )
+        with open("static/images/FIRST_Horz_RGB.png", "rb") as file:
+            image_content = file.read()
+            s3.put_object(
+                Bucket=S3_BUCKET,
+                Key="images/FIRST_Horz_RGB.png",
+                Body=image_content,
+                ContentType='image/png'
+            )
 
 def generate_homepage():
     env = Environment(loader=FileSystemLoader('html_templates'))

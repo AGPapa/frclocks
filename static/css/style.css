@@ -11,11 +11,7 @@
 /* Base styles */
 body {
     background-color: var(--background);
-    font-family: Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    height: 100vh;
+    font-family: Verdana;
     margin: 0;
 }
 

@@ -32,7 +32,9 @@ def duckdb_result_to_dict(query: str, con: duckdb.DuckDBPyConnection):
 def generate_homepage():
     env = Environment(loader=FileSystemLoader('html_templates'))
     template = env.get_template('homepage.html')
-    context = {}
+    context = {
+        'env': ENV
+    }
 
     html_content = template.render(**context)
     write_file(html_content, "homepage/homepage.html")
@@ -87,7 +89,8 @@ def generate_district_page(district_key: str, con: duckdb.DuckDBPyConnection):
     context = {
         'rankings': rankings,
         'events': events,
-        'district_stats': stats
+        'district_stats': stats,
+        'env': ENV
     }
 
     html_content = template.render(**context)
@@ -121,7 +124,8 @@ def generate_event_page(event_key: str, con: duckdb.DuckDBPyConnection):
 
     context = {
         'event': event,
-        'points_remaining': points_remaining
+        'points_remaining': points_remaining,
+        'env': ENV
     }
 
     html_content = template.render(**context)
@@ -155,7 +159,8 @@ def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
 
     context = {
         'lock_status': lock_status,
-        'following_teams': following_teams
+        'following_teams': following_teams,
+        'env': ENV
     }
 
     html_content = template.render(**context)

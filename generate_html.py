@@ -29,15 +29,27 @@ def duckdb_result_to_dict(query: str, con: duckdb.DuckDBPyConnection):
     columns = [col[0] for col in result.description]
     return [dict(zip(columns, row)) for row in result.fetchall()]
 
+def write_static_files():
+    if ENV == "PROD":
+        s3 = boto3.client('s3')
+        with open("static/css/style.css", "r") as file:
+            css_content = file.read()
+            s3.put_object(
+                Bucket=S3_BUCKET,
+                Key="css/style.css",
+                Body=css_content,
+                ContentType='text/css'
+            )
+
 def generate_homepage():
     env = Environment(loader=FileSystemLoader('html_templates'))
-    template = env.get_template('homepage.html')
+    template = env.get_template('index.html')
     context = {
         'env': ENV
     }
 
     html_content = template.render(**context)
-    write_file(html_content, "homepage/homepage.html")
+    write_file(html_content, "index.html")
 
 def generate_district_page(district_key: str, con: duckdb.DuckDBPyConnection):
     env = Environment(loader=FileSystemLoader('html_templates'))
@@ -168,6 +180,7 @@ def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
 
 
 def generate_html(district_key: str, con: duckdb.DuckDBPyConnection):
+    write_static_files()
     generate_homepage()
     generate_district_page(district_key, con)
 

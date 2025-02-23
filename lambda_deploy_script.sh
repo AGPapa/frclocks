@@ -5,11 +5,16 @@ mkdir deployment/transforms
 mkdir deployment/lookups
 mkdir deployment/html_templates
 mkdir deployment/html_templates/includes
+mkdir deployment/static
+mkdir deployment/static/css
+mkdir deployment/static/images
 cp *.py ./deployment/
 cp transforms/*.sql ./deployment/transforms/
 cp lookups/*.csv ./deployment/lookups/
 cp html_templates/*.html ./deployment/html_templates/
 cp html_templates/includes/*.html ./deployment/html_templates/includes/
+cp static/css/style.css ./deployment/static/css/
+cp static/images/* ./deployment/static/images/
 cd deployment
 zip -r ../lambda_deployment.zip .
 cd ..

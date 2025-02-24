@@ -39,6 +39,9 @@
         </table>
 
         <h2>District Rankings</h2>
+        <img src="{% if env == 'DEV' %}../../static/images/district_key.png{% else %}/images/district_key.png{% endif %}" alt="key"/>
+        <br/>
+        <br/>
         <table class="rankings-table">
             <tr class="rankings-table-header">
                 <th style="width: 60px;">Rank</th>

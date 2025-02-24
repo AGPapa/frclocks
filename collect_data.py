@@ -74,7 +74,7 @@ def save_matches(event_key: str, con: duckdb.DuckDBPyConnection):
         )
 
 def save_alliances(event_key: str, con: duckdb.DuckDBPyConnection):
-    alliances = get_tba(f'event/{event_key}/alliances')
+    alliances = get_tba(f'event/{event_key}/alliances') or []
     con.execute("CREATE TABLE IF NOT EXISTS alliances (event_key VARCHAR, alliance_name VARCHAR, captain_key VARCHAR, first_selection_key VARCHAR, second_selection_key VARCHAR, backup_key VARCHAR)")
     for alliance in alliances:
         con.execute(
@@ -100,7 +100,8 @@ def save_awards(event_key: str, con: duckdb.DuckDBPyConnection):
             )
 
 def save_event_points(event_key: str, con: duckdb.DuckDBPyConnection):
-    event_points = get_tba(f'event/{event_key}/district_points')["points"]
+    data = get_tba(f'event/{event_key}/district_points')
+    event_points = data["points"] if data else {}
     con.execute("CREATE TABLE IF NOT EXISTS event_points (event_key VARCHAR, team_key VARCHAR, points INT)")
     for team in event_points.keys():
         con.execute("INSERT INTO event_points (event_key, team_key, points) VALUES (?, ?, ?)", (event_key, team, event_points[team]["total"]))

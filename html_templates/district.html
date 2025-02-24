@@ -55,7 +55,7 @@
             {% for team in rankings %}
             <tr style="background-color: #{{ team.color }}">
                 <td class="col-rank">{{ team.rank }}</td>
-                <td class="col-team"><a href="https://www.thebluealliance.com/team/{{ team.team_number }}">{{ team.team_key }}</a></td>
+                <td class="col-team"><a href="https://www.thebluealliance.com/team/{{ team.team_number }}"><b>{{ team.team_key }}</b></a></td>
                 <td class="col-event1">{{ team.event1_points or 0 }}</td>
                 <td class="col-event2">{{ team.event2_points or 0 }}</td>
                 <td class="col-age-bonus">{{ team.rookie_bonus }}</td>

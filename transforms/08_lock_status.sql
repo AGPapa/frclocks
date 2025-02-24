@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS lock_status AS (
         WHEN lock_status = '100%' THEN '6AA84F'
         WHEN lock_status = '-' THEN 'E06666'
         WHEN lock_status = 'Impact' THEN '6D9EEB'
+        WHEN ANY_VALUE(following_teams.following_team_key) IS NOT NULL THEN 'B6D7A8'
         ELSE 'FFD966'
         END AS color
     FROM district_rankings

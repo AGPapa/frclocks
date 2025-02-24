@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS district_rankings_without_impact AS (
             event_teams.team_key,
             event_states.district_key,
             LEAST(COUNT(*), 2) AS events_remaining,
-            SUM(CASE WHEN event_states.event_state IN ('Pre-Event', 'Qualification') THEN 1 ELSE 0 END) AS incomplete_quals
+            LEAST(SUM(CASE WHEN event_states.event_state IN ('Pre-Event', 'Qualification') THEN 1 ELSE 0 END), 2) AS incomplete_quals
         FROM event_teams
         JOIN event_states ON event_teams.event_key = event_states.event_key
         WHERE event_states.event_state != 'Completed'

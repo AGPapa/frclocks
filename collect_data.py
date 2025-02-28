@@ -34,7 +34,7 @@ def get_tba(url: str):
                     file.write(json.dumps(response.json()))
             return response.json()
         else:
-            raise "TBA Call Failed Error"
+            raise Exception(f"TBA Call Failed Error: {url}")
 
 
 def save_events(district_key: str, con: duckdb.DuckDBPyConnection):

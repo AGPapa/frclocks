@@ -9,6 +9,13 @@ CREATE TABLE IF NOT EXISTS lock_status AS (
         JOIN events ON event_points.event_key = events.event_key
         JOIN district_rankings ON event_points.team_key = district_rankings.team_key
         WHERE events.event_type = 'District' and district_rankings.district_key = events.district_key
+    ),
+    num_of_teams AS (
+        SELECT
+            district_rankings.district_key,
+            COUNT(*) AS num_of_teams
+        FROM district_rankings
+        GROUP BY district_rankings.district_key
     )
     SELECT
         district_rankings.team_key,
@@ -26,9 +33,10 @@ CREATE TABLE IF NOT EXISTS lock_status AS (
         WHEN ANY_VALUE(district_points_remaining.points_remaining) = 0 AND ANY_VALUE(district_rankings_without_impact.active_team_rank) <= (ANY_VALUE(district_lookup.dcmp_capacity) - ANY_VALUE(district_points_remaining.total_district_events)) THEN '100%'
         WHEN COUNT(following_teams.team_key) < ANY_VALUE(following_teams.teams_to_pass) THEN '100%'
         WHEN SUM(following_teams.following_team_points_needed_to_pass) > ANY_VALUE(district_points_remaining.points_remaining) THEN '100%'
+        WHEN ANY_VALUE(num_of_teams.num_of_teams) = ANY_VALUE(district_lookup.dcmp_capacity) THEN '100%'
         WHEN ANY_VALUE(district_rankings_without_impact.events_remaining) = 0 AND ANY_VALUE(following_teams.following_team_key) IS NULL THEN '-'
         WHEN ANY_VALUE(following_teams.following_team_key) IS NULL THEN '0%'
-        ELSE COALESCE(FLOOR(SUM(following_teams.following_team_points_needed_to_pass) * 100.0 / ANY_VALUE(district_points_remaining.points_remaining)), 0) || '%'
+        ELSE COALESCE(LEAST(ROUND(SUM(following_teams.following_team_points_needed_to_pass) * 100.0 / ANY_VALUE(district_points_remaining.points_remaining), 1), 99.9), 0.0) || '%'
         END AS lock_status,
         CASE
         WHEN lock_status = '100%' THEN '6AA84F'
@@ -40,6 +48,7 @@ CREATE TABLE IF NOT EXISTS lock_status AS (
     FROM district_rankings
     JOIN district_points_remaining ON district_rankings.district_key = district_points_remaining.district_key
     JOIN district_lookup ON district_rankings.district_key = district_lookup.district_key
+    JOIN num_of_teams ON district_rankings.district_key = num_of_teams.district_key
     LEFT JOIN district_rankings_without_impact ON district_rankings.team_key = district_rankings_without_impact.team_key
     LEFT JOIN following_teams ON district_rankings.team_key = following_teams.team_key
     LEFT JOIN impact_award_winners ON district_rankings.team_key = impact_award_winners.team_key

@@ -27,7 +27,6 @@ def get_tba(url: str):
     else:
         session = Session()
         session.headers.update({"X-TBA-Auth-Key": TBA_AUTH_KEY, "X-TBA-Auth-Id": ""})
-        print(TBA_PREFIX + url)
         response = session.get(TBA_PREFIX + url)
         if response.status_code == 200:
             if ENV == "DEV":

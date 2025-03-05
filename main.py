@@ -1,5 +1,6 @@
 import duckdb
 import json
+import time
 
 from collect_data import collect_data
 from run_transformations import run_transformations
@@ -15,10 +16,22 @@ def lambda_handler(event, context):
         con = duckdb.connect(':memory:')  # Using in-memory database for Lambda
 
         # Run pipeline
+        start_time = time.time()
         load_lookup_tables(con)
+        load_lookup_tables_time = time.time()
+        print(f"Time to load lookup tables: {load_lookup_tables_time - start_time:.2f} seconds")
+
         collect_data(district_key, con)
+        collect_data_time = time.time()
+        print(f"Time to collect data: {collect_data_time - load_lookup_tables_time:.2f} seconds")
+
         run_transformations(con)
+        run_transformations_time = time.time()
+        print(f"Time to run transformations: {run_transformations_time - collect_data_time:.2f} seconds")
+
         generate_html(district_key, con)
+        generate_html_time = time.time()
+        print(f"Time to generate HTML: {generate_html_time - run_transformations_time:.2f} seconds")
 
         # Clean up
         con.close()
@@ -36,7 +49,7 @@ def lambda_handler(event, context):
 
 # Keep the main() function for local testing
 def main():
-    test_event = {'district_key': '2024fma'}
+    test_event = {'district_key': '2025fim'}
     print(lambda_handler(test_event, None))
 
 if __name__ == "__main__":

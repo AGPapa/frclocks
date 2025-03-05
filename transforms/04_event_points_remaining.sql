@@ -17,8 +17,7 @@ CREATE TABLE IF NOT EXISTS event_points_remaining AS (
     rookie_awards AS (
         SELECT
             event_teams.event_key,
-            CASE WHEN COUNT(event_teams.team_key) >= 2 THEN 13
-            WHEN COUNT(event_teams.team_key) = 1 THEN 8
+            CASE WHEN COUNT(event_teams.team_key) >= 1 THEN 8
             ELSE 0 END AS rookie_award_points
         FROM event_teams
         JOIN district_rankings ON event_teams.team_key = district_rankings.team_key
@@ -28,7 +27,7 @@ CREATE TABLE IF NOT EXISTS event_points_remaining AS (
     SELECT
         events.event_key,
         event_teams_count.team_count,
-        CASE WHEN event_state != 'Completed' THEN 63 + COALESCE(rookie_awards.rookie_award_points, 0) ELSE 0 END AS award_points, -- don't include chairmans or unobtainable rookie awards
+        CASE WHEN event_state != 'Completed' THEN 68 + COALESCE(rookie_awards.rookie_award_points, 0) ELSE 0 END AS award_points, -- don't include chairmans or unobtainable rookie awards
         CASE WHEN event_states.event_state = 'Finals' THEN 31 -- 30 for winner, 1 for possible backup team for finalist
             WHEN event_states.event_state = 'Elims 13' THEN 31 + 22 -- 21 for winner, 1 for possible backup team for 3rd place 
             WHEN event_states.event_state = 'Elims 12' THEN 31 + 22 + 19 -- 18 for winner, 1 for possible backup team for 4th place

@@ -35,10 +35,10 @@ CREATE TABLE IF NOT EXISTS event_points_remaining AS (
             WHEN event_states.event_state = 'Elims 10' THEN 31 + 22 + 19 + 21 + 21
             WHEN event_states.event_state = 'Elims 9' THEN 31 + 22 + 19 + 21 + 21 + 21
             WHEN event_states.event_state = 'Elims 8' THEN 31 + 22 + 19 + 21 + 21 + 21 + 39
-            WHEN event_states.event_state IN ('Elims 1 to 7', 'Selection', 'Qualifications', 'Pre-Event') THEN 31 + 22 + 19 + 21 + 21 + 21 + 39 + 39
+            WHEN event_states.event_state IN ('Elims 1 to 7', 'Selections', 'Qualifications', 'Pre-Event') THEN 31 + 22 + 19 + 21 + 21 + 21 + 39 + 39
             ELSE 0
         END AS elimination_points,
-        CASE WHEN event_states.event_state IN ('Pre-Event', 'Qualifications', 'Selection') THEN 236 ELSE 0 END AS alliance_selection_points,
+        CASE WHEN event_states.event_state IN ('Pre-Event', 'Qualifications', 'Selections') THEN 236 ELSE 0 END AS alliance_selection_points,
         CASE WHEN event_states.event_state IN ('Pre-Event', 'Qualifications') THEN qual_points.total_adjusted_qual_points ELSE 0 END AS quals_adjusted,
         quals_adjusted + alliance_selection_points + elimination_points + award_points AS points_remaining
     FROM events

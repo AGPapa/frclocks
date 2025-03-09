@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS event_states AS (
         SELECT
             events.event_key,
             COUNT(DISTINCT matches.match_key) AS match_count,
-            COUNT(NULLIF(matches.winning_alliance, '')) AS completed_match_count
+            COUNT(COALESCE(NULLIF(matches.red_score, -1), NULLIF(matches.blue_score, -1))) AS completed_match_count
         FROM events
         LEFT JOIN matches ON events.event_key = matches.event_key
         WHERE matches.comp_level = 'qm'

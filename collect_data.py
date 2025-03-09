@@ -53,18 +53,20 @@ def save_event_teams(event_key: str, con: duckdb.DuckDBPyConnection):
         con.execute("INSERT INTO event_teams (event_key, team_key) VALUES (?, ?)", (event_key, team["key"]))
 
 def save_matches(event_key: str, con: duckdb.DuckDBPyConnection, fetch_data: bool):
-    con.execute("CREATE TABLE IF NOT EXISTS matches (match_key VARCHAR, event_key VARCHAR, comp_level VARCHAR, match_number INT, winning_alliance VARCHAR, red_1_key VARCHAR, red_2_key VARCHAR, red_3_key VARCHAR, blue_1_key VARCHAR, blue_2_key VARCHAR, blue_3_key VARCHAR)")
+    con.execute("CREATE TABLE IF NOT EXISTS matches (match_key VARCHAR, event_key VARCHAR, comp_level VARCHAR, match_number INT, winning_alliance VARCHAR, red_score INT, blue_score INT, red_1_key VARCHAR, red_2_key VARCHAR, red_3_key VARCHAR, blue_1_key VARCHAR, blue_2_key VARCHAR, blue_3_key VARCHAR)")
     if fetch_data:
         matches = get_tba(f'event/{event_key}/matches/simple')
         for match in matches:
             con.execute(
-                "INSERT INTO matches (match_key, event_key, comp_level, match_number, winning_alliance, red_1_key, red_2_key, red_3_key, blue_1_key, blue_2_key, blue_3_key) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO matches (match_key, event_key, comp_level, match_number, winning_alliance, red_score, blue_score, red_1_key, red_2_key, red_3_key, blue_1_key, blue_2_key, blue_3_key) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     match["key"],
                     event_key,
                     match["comp_level"],
                     match["match_number"],
                     match["winning_alliance"],
+                    match["alliances"]["red"]["score"],
+                    match["alliances"]["blue"]["score"],
                     match["alliances"]["red"]["team_keys"][0],
                     match["alliances"]["red"]["team_keys"][1],
                     match["alliances"]["red"]["team_keys"][2],

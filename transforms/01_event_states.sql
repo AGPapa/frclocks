@@ -15,6 +15,16 @@ CREATE TABLE IF NOT EXISTS event_states AS (
         FROM events
         LEFT JOIN alliances ON events.event_key = alliances.event_key
         GROUP BY events.event_key
+    ),
+    quals_state AS (
+        SELECT
+            events.event_key,
+            COUNT(DISTINCT matches.match_key) AS match_count,
+            COUNT(NULLIF(matches.winning_alliance, '')) AS completed_match_count
+        FROM events
+        LEFT JOIN matches ON events.event_key = matches.event_key
+        WHERE matches.comp_level = 'qm'
+        GROUP BY events.event_key
     )
     SELECT
         events.event_key,
@@ -24,9 +34,9 @@ CREATE TABLE IF NOT EXISTS event_states AS (
         ANY_VALUE(events.start_date) AS start_date,
         ANY_VALUE(events.end_date) AS end_date,
         CASE
-            WHEN COUNT(DISTINCT matches.match_key) = 0 THEN 'Pre-Event'
-        --    WHEN TODO THEN 'Qualifications'
-        --    WHEN TODO THEN 'Selections'
+            WHEN COALESCE(ANY_VALUE(quals_state.match_count), 0) = 0 THEN 'Pre-Event'
+            WHEN ANY_VALUE(quals_state.completed_match_count) < ANY_VALUE(quals_state.match_count) THEN 'Qualifications'
+            WHEN ANY_VALUE(quals_state.completed_match_count) = ANY_VALUE(quals_state.match_count) AND ANY_VALUE(alliance_state.alliance_count) = 0 THEN 'Selections'
             WHEN ANY_VALUE(alliance_state.alliance_count) > 0 AND SUM(CASE WHEN matches.comp_level = 'sf' AND matches.winning_alliance IN ('red', 'blue') THEN 1 ELSE 0 END) = 1 THEN 'Elims 1'
             WHEN SUM(CASE WHEN matches.comp_level = 'sf' AND matches.winning_alliance IN ('red', 'blue') THEN 1 ELSE 0 END) BETWEEN 1 AND 12 THEN 'Elims ' || (SUM(CASE WHEN matches.comp_level = 'sf' AND matches.winning_alliance IN ('red', 'blue') THEN 1 ELSE 0 END) + 1)
             WHEN SUM(CASE WHEN matches.comp_level = 'f' AND matches.winning_alliance = 'red' THEN 1 ELSE 0 END) < 2 AND SUM(CASE WHEN matches.comp_level = 'f' AND matches.winning_alliance = 'blue' THEN 1 ELSE 0 END) < 2 THEN 'Finals'
@@ -40,6 +50,7 @@ CREATE TABLE IF NOT EXISTS event_states AS (
     FROM events
     LEFT JOIN award_state ON events.event_key = award_state.event_key
     LEFT JOIN alliance_state ON events.event_key = alliance_state.event_key
+    LEFT JOIN quals_state ON events.event_key = quals_state.event_key
     LEFT JOIN matches ON events.event_key = matches.event_key
     WHERE events.event_type = 'District'
     GROUP BY

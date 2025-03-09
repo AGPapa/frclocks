@@ -182,7 +182,7 @@ def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
             following_team_key,
             SUBSTRING(following_team_key, 4) AS following_team_number,
             following_team_rank,
-            following_team_points AS inflated_points_total,
+            following_team_inflated_points AS inflated_points_total,
             following_team_points_needed_to_pass AS points_to_pass
         FROM following_teams
         WHERE team_key = '{team_key}'

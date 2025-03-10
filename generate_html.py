@@ -57,6 +57,22 @@ def write_static_files():
                 Body=image_content,
                 ContentType='image/png'
             )
+        with open("static/images/lock.svg", "rb") as file:
+            image_content = file.read()
+            s3.put_object(
+                Bucket=S3_BUCKET,
+                Key="images/lock.svg",
+                Body=image_content,
+                ContentType='image/svg+xml'
+            )
+        with open("static/images/lock.ico", "rb") as file:
+            image_content = file.read()
+            s3.put_object(
+                Bucket=S3_BUCKET,
+                Key="images/lock.ico",
+                Body=image_content,
+                ContentType='image/x-icon'
+            )
 
 def generate_homepage():
     env = Environment(loader=FileSystemLoader('html_templates'))

@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS event_points_remaining AS (
         SELECT
             event_size,
             CAST(SUM(qual_points) AS INTEGER) AS total_qual_points,
-            total_qual_points - 4 * (event_size) AS total_adjusted_qual_points
+            total_qual_points - MIN(qual_points) * event_size AS total_adjusted_qual_points
         FROM qual_points_lookup
         GROUP BY event_size
     ),

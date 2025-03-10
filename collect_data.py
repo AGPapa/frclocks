@@ -42,6 +42,8 @@ def save_events(district_key: str, con: duckdb.DuckDBPyConnection):
     event_keys = []
     con.execute("CREATE TABLE IF NOT EXISTS events (district_key VARCHAR, event_key VARCHAR, name VARCHAR, event_type VARCHAR, start_date DATE, end_date DATE)")
     for event in events:
+        if event["key"] == "2025tempclone-356125237":
+            continue
         con.execute("INSERT INTO events (district_key, event_key, name, event_type, start_date, end_date) VALUES (?, ?, ?, ?, ?, ?)", (district_key, event["key"], event["short_name"], event["event_type_string"], event["start_date"], event["end_date"]))
         event_keys.append((event["key"], event["start_date"]))
     return event_keys

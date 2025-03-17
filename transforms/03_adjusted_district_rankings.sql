@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS adjusted_district_rankings AS (
             SUM(CASE WHEN event_states.event_state IN ('Pre-Event', 'Qualifications') THEN 1 ELSE 0 END) AS quals_remaining,
             SUM(CASE WHEN event_states.event_state IN ('Pre-Event', 'Qualifications', 'Selections') THEN 1 ELSE 0 END) AS selections_remaining,
             SUM(CASE WHEN event_states.event_state IN ('Pre-Event', 'Qualifications', 'Selections', 'Elims 1 to 7') THEN 1 ELSE 0 END) AS double_elims_remaining,
-            SUM(CASE WHEN event_states.event_state NOT IN ('Finals', 'Awards', 'Completed') THEN 1 ELSE 0 END) AS finals_remaining,
-            SUM(CASE WHEN event_states.event_state NOT IN ('Awards', 'Completed') THEN 1 ELSE 0 END) AS awards_remaining
+            SUM(CASE WHEN event_states.event_state NOT IN ('Awards', 'Completed') THEN 1 ELSE 0 END) AS finals_remaining,
+            SUM(CASE WHEN event_states.event_state NOT IN ('Completed') THEN 1 ELSE 0 END) AS awards_remaining
         FROM events_that_count
         JOIN event_states ON events_that_count.event_key = event_states.event_key
         WHERE event_states.event_state != 'Completed'

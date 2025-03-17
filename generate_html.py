@@ -212,8 +212,10 @@ def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
         'ga_tracking_id': GA_TRACKING_ID
     }
 
-    html_content = template.render(**context)
-    write_file(html_content, f"teams/{team_key}.html")
+    # Only generate team pages if needed
+    if lock_status['lock_status'] not in ['-', '0%', 'Impact']:
+        html_content = template.render(**context)
+        write_file(html_content, f"teams/{team_key}.html")
 
 
 def generate_html(district_key: str, con: duckdb.DuckDBPyConnection):

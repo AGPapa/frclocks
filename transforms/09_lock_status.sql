@@ -28,12 +28,14 @@ CREATE TABLE IF NOT EXISTS lock_status AS (
         COALESCE(ANY_VALUE(event_points_1.points), 0) AS event1_points,
         COALESCE(ANY_VALUE(event_points_2.points), 0) AS event2_points,
         ANY_VALUE(adjusted_district_rankings.rookie_bonus) AS rookie_bonus,
+        ANY_VALUE(teams_to_pass.teams_to_pass) AS teams_to_pass,
+        SUM(CASE WHEN following_teams.following_team_can_pass THEN 1 ELSE 0 END) AS total_teams_that_can_pass,
         CAST(SUM(following_teams.following_team_points_needed_to_pass) AS INTEGER) AS total_points_to_pass,
         ANY_VALUE(district_points_remaining.points_remaining) AS total_points_remaining,
         CASE
         WHEN ANY_VALUE(impact_award_winners.team_key) IS NOT NULL THEN 'Impact'
         WHEN ANY_VALUE(district_points_remaining.points_remaining) = 0 AND ANY_VALUE(district_rankings_without_impact.active_team_rank) <= (ANY_VALUE(district_lookup.dcmp_capacity) - ANY_VALUE(district_points_remaining.total_district_events)) THEN '100%'
-        WHEN COUNT(following_teams.team_key) < ANY_VALUE(following_teams.teams_to_pass) THEN '100%'
+        WHEN SUM(CASE WHEN following_teams.following_team_can_pass THEN 1 ELSE 0 END) < ANY_VALUE(following_teams.teams_to_pass) THEN '100%'
         WHEN SUM(following_teams.following_team_points_needed_to_pass) > ANY_VALUE(district_points_remaining.points_remaining) THEN '100%'
         WHEN ANY_VALUE(num_of_teams.num_of_teams) = ANY_VALUE(district_lookup.dcmp_capacity) THEN '100%'
         WHEN ANY_VALUE(district_rankings_without_impact.events_remaining) = 0 AND ANY_VALUE(following_teams.following_team_key) IS NULL THEN '-'
@@ -51,6 +53,7 @@ CREATE TABLE IF NOT EXISTS lock_status AS (
     JOIN district_points_remaining ON adjusted_district_rankings.district_key = district_points_remaining.district_key
     JOIN district_lookup ON adjusted_district_rankings.district_key = district_lookup.district_key
     JOIN num_of_teams ON adjusted_district_rankings.district_key = num_of_teams.district_key
+    LEFT JOIN teams_to_pass ON adjusted_district_rankings.team_key = teams_to_pass.team_key
     LEFT JOIN district_rankings_without_impact ON adjusted_district_rankings.team_key = district_rankings_without_impact.team_key
     LEFT JOIN following_teams ON adjusted_district_rankings.team_key = following_teams.team_key
     LEFT JOIN impact_award_winners ON adjusted_district_rankings.team_key = impact_award_winners.team_key

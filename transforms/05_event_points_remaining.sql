@@ -28,13 +28,13 @@ CREATE TABLE IF NOT EXISTS event_points_remaining AS (
         events.event_key,
         event_teams_count.team_count,
         CASE WHEN event_state != 'Completed' THEN 68 + COALESCE(rookie_awards.rookie_award_points, 0) ELSE 0 END AS award_points, -- don't include chairmans or unobtainable rookie awards
-        CASE WHEN event_states.event_state = 'Finals' THEN 31 -- 30 for winner, 1 for possible backup team for finalist
-            WHEN event_states.event_state = 'Elims 13' THEN 31 + 22 -- 21 for winner, 1 for possible backup team for 3rd place 
-            WHEN event_states.event_state = 'Elims 12' THEN 31 + 22 + 19 -- 18 for winner, 1 for possible backup team for 4th place
-            WHEN event_states.event_state = 'Elims 11' THEN 31 + 22 + 19 + 21
-            WHEN event_states.event_state = 'Elims 10' THEN 31 + 22 + 19 + 21 + 21
-            WHEN event_states.event_state = 'Elims 9' THEN 31 + 22 + 19 + 21 + 21 + 21
-            WHEN event_states.event_state = 'Elims 8' THEN 31 + 22 + 19 + 21 + 21 + 21 + 39
+        CASE WHEN event_states.event_state = 'Finals' THEN 31 -- 30 points for match winner, 1 for possible rounding if there's backup team for finalist
+            WHEN event_states.event_state = 'Elims 13' THEN 31 + 22 -- 21 points for match winner, 1 for possible rounding if there's backup team for 3rd place
+            WHEN event_states.event_state = 'Elims 12' THEN 31 + 22 + 19 -- 18 points for match winner, 1 for possible rounding if there's backup team for 4th place
+            WHEN event_states.event_state = 'Elims 11' THEN 31 + 22 + 19 + 21 -- 21 points (7 each) for guaranteed 4th place or better
+            WHEN event_states.event_state = 'Elims 10' THEN 31 + 22 + 19 + 21 + 21 -- 21 points (7 each) for guaranteed 4th place or better
+            WHEN event_states.event_state = 'Elims 9' THEN 31 + 22 + 19 + 21 + 21 + 21 -- 21 points (7 each) for guaranteed 4th place or better
+            WHEN event_states.event_state = 'Elims 8' THEN 31 + 22 + 19 + 21 + 21 + 21 + 39 -- 39 points (13 each) for guaranteed 3rd place or better
             WHEN event_states.event_state IN ('Elims 1 to 7', 'Selections', 'Qualifications', 'Pre-Event') THEN 31 + 22 + 19 + 21 + 21 + 21 + 39 + 39
             ELSE 0
         END AS elimination_points,

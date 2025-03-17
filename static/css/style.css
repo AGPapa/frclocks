@@ -205,7 +205,6 @@ table, th, td {
 
 .points-to-tie-table [class^="col-"] {
     color: black;
-    background-color: var(--cell-background);
 }
 
 .points-to-tie-table .col-description {
@@ -215,15 +214,12 @@ table, th, td {
 
 .points-to-tie-table .col-points {
     text-align: right;
-    background-color: var(--cell-background);
 }
 
 .points-to-tie-table .col-rank {
     text-align: right;
-    background-color: var(--cell-background);
 }
 
 .points-to-tie-table .col-team {
     text-align: center;
-    background-color: var(--cell-background);
 }

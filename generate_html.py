@@ -186,6 +186,8 @@ def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
         SELECT 
             team_key,
             total_inflated_points,
+            teams_to_pass,
+            total_teams_that_can_pass,
             total_points_to_pass,
             total_points_remaining,
             lock_status
@@ -199,7 +201,9 @@ def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
             SUBSTRING(following_team_key, 4) AS following_team_number,
             following_team_rank,
             following_team_inflated_points AS inflated_points_total,
-            following_team_points_needed_to_pass AS points_to_pass
+            following_team_max_possible_points AS max_points,
+            COALESCE(CAST(following_team_points_needed_to_pass AS VARCHAR), '-') AS points_to_pass,
+            following_team_color AS color
         FROM following_teams
         WHERE team_key = '{team_key}'
         ORDER BY following_team_rank ASC

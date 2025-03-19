@@ -49,6 +49,14 @@ def write_static_files():
                 Body=image_content,
                 ContentType='image/png'
             )
+        with open("static/images/andymark_logo.png", "rb") as file:
+            image_content = file.read()
+            s3.put_object(
+                Bucket=S3_BUCKET,
+                Key="images/andymark_logo.png",
+                Body=image_content,
+                ContentType='image/png'
+            )
         with open("static/images/district_key.png", "rb") as file:
             image_content = file.read()
             s3.put_object(

@@ -60,6 +60,10 @@ event_points:
 event_key: varchar
 team_key: varchar
 points: int
+qual_points: int
+selelction_points: int
+elim_points: int
+award_points: int
 
 district_rankings:
 district_key: varchar

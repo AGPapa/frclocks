@@ -168,10 +168,10 @@ def generate_event_page(event_key: str, con: duckdb.DuckDBPyConnection):
     # Get points remaining data
     points_remaining = duckdb_result_to_dict(f"""
         SELECT 
-            quals_adjusted,
-            alliance_selection_points,
-            elimination_points,
-            award_points,
+            quals_adjusted_points_remaining,
+            alliance_selection_points_remaining,
+            elimination_points_remaining,
+            award_points_remaining,
             points_remaining
         FROM event_points_remaining
         WHERE event_key = '{event_key}'

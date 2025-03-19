@@ -107,12 +107,12 @@ def save_awards(event_key: str, con: duckdb.DuckDBPyConnection, fetch_data: bool
                 )
 
 def save_event_points(event_key: str, con: duckdb.DuckDBPyConnection, fetch_data: bool):
-    con.execute("CREATE TABLE IF NOT EXISTS event_points (event_key VARCHAR, team_key VARCHAR, points INT)")
+    con.execute("CREATE TABLE IF NOT EXISTS event_points (event_key VARCHAR, team_key VARCHAR, points INT, qual_points INT, selection_points INT, elim_points INT, award_points INT)")
     if fetch_data:
         data = get_tba(f'event/{event_key}/district_points')
         event_points = data["points"] if data else {}
         for team in event_points.keys():
-            con.execute("INSERT INTO event_points (event_key, team_key, points) VALUES (?, ?, ?)", (event_key, team, event_points[team]["total"]))
+            con.execute("INSERT INTO event_points (event_key, team_key, points, qual_points, selection_points, elim_points, award_points) VALUES (?, ?, ?, ?, ?, ?, ?)", (event_key, team, event_points[team]["total"], event_points[team]["qual_points"], event_points[team]["alliance_points"], event_points[team]["elim_points"], event_points[team]["award_points"]))
 
 def save_district_rankings(district_key: str, con: duckdb.DuckDBPyConnection):
     rankings = get_tba(f'district/{district_key}/rankings')

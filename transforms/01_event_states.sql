@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS event_states AS (
             WHEN ANY_VALUE(alliance_state.alliance_count) > 0 AND SUM(CASE WHEN matches.comp_level = 'sf' AND matches.winning_alliance IN ('red', 'blue') THEN 1 ELSE 0 END) < 7 THEN 'Elims 1 to 7'
             WHEN SUM(CASE WHEN matches.comp_level = 'sf' AND matches.winning_alliance IN ('red', 'blue') THEN 1 ELSE 0 END) BETWEEN 1 AND 12 THEN 'Elims ' || (SUM(CASE WHEN matches.comp_level = 'sf' AND matches.winning_alliance IN ('red', 'blue') THEN 1 ELSE 0 END) + 1)
             WHEN SUM(CASE WHEN matches.comp_level = 'f' AND matches.winning_alliance = 'red' THEN 1 ELSE 0 END) < 2 AND SUM(CASE WHEN matches.comp_level = 'f' AND matches.winning_alliance = 'blue' THEN 1 ELSE 0 END) < 2 THEN 'Finals'
-            WHEN ANY_VALUE(award_state.award_count) < 10 THEN 'Awards'
+            WHEN ANY_VALUE(award_state.award_count) <= 10 THEN 'Awards'
             WHEN ANY_VALUE(award_state.award_count) > 10 THEN 'Completed'
             ELSE 'ERROR'
         END AS event_state,

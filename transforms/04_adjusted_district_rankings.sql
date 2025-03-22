@@ -42,10 +42,10 @@ CREATE TABLE IF NOT EXISTS adjusted_district_rankings AS (
     SELECT
         district_rankings.team_key,
         district_rankings.district_key,
-        ROW_NUMBER() OVER (PARTITION BY district_rankings.district_key ORDER BY COALESCE(filtered_event_points.points, 0) + district_rankings.rookie_bonus DESC, district_rankings.rank ASC) AS rank,
-        COALESCE(filtered_event_points.points, 0) + district_rankings.rookie_bonus AS points,
-        district_rankings.rookie_bonus,
-        CAST(COALESCE(filtered_event_points.points, 0) + district_rankings.rookie_bonus + 4 * COALESCE(events_remaining.quals_remaining, 0) AS INTEGER) AS inflated_points,
+        ROW_NUMBER() OVER (PARTITION BY district_rankings.district_key ORDER BY COALESCE(filtered_event_points.points, 0) + district_rankings.rookie_bonus + COALESCE(points_adjustments.points_adjustment, 0) DESC, district_rankings.rank ASC) AS rank,
+        COALESCE(filtered_event_points.points, 0) + district_rankings.rookie_bonus + COALESCE(points_adjustments.points_adjustment, 0) AS points,
+        district_rankings.rookie_bonus + COALESCE(points_adjustments.points_adjustment, 0) AS rookie_bonus,
+        CAST(COALESCE(filtered_event_points.points, 0) + district_rankings.rookie_bonus + COALESCE(points_adjustments.points_adjustment, 0) + 4 * COALESCE(events_remaining.quals_remaining, 0) AS INTEGER) AS inflated_points,
         COALESCE(events_remaining.events_remaining, 0) AS events_remaining,
         COALESCE(events_remaining.quals_remaining, 0) AS quals_remaining,
         COALESCE(events_remaining.selections_remaining, 0) AS selections_remaining,
@@ -55,4 +55,5 @@ CREATE TABLE IF NOT EXISTS adjusted_district_rankings AS (
     FROM district_rankings
     LEFT JOIN filtered_event_points ON district_rankings.team_key = filtered_event_points.team_key AND district_rankings.district_key = filtered_event_points.district_key
     LEFT JOIN events_remaining ON district_rankings.team_key = events_remaining.team_key AND district_rankings.district_key = events_remaining.district_key
+    LEFT JOIN points_adjustments ON district_rankings.team_key = points_adjustments.team_key AND district_rankings.district_key = points_adjustments.district_key
 )

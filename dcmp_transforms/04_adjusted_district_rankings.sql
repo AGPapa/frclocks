@@ -53,4 +53,5 @@ CREATE TABLE IF NOT EXISTS adjusted_district_rankings AS (
     FROM district_rankings
     LEFT JOIN dcmp ON district_rankings.team_key = dcmp.team_key
     LEFT JOIN district_event_points ON district_rankings.team_key = district_event_points.team_key
+    -- TODO: Add points adjustments
 )

@@ -14,6 +14,10 @@ event_size: int
 team_rank: int
 qual_points: int
 
+points_adjustments:
+district_key: varchar
+team_key: varchar
+points_adjustment: int
 
 -- Raw Data --
 

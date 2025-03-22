@@ -11,6 +11,7 @@ def lambda_handler(event, context):
     try:
         # Get district_key from event or use default
         district_key = event.get('district_key', '2024fma')
+        mode = event.get('mode', 'district')
 
         # Initialize DuckDB connection
         con = duckdb.connect(':memory:')  # Using in-memory database for Lambda
@@ -25,7 +26,7 @@ def lambda_handler(event, context):
         collect_data_time = time.time()
         print(f"Time to collect data: {collect_data_time - load_lookup_tables_time:.2f} seconds")
 
-        run_transformations(con)
+        run_transformations(con, mode)
         run_transformations_time = time.time()
         print(f"Time to run transformations: {run_transformations_time - collect_data_time:.2f} seconds")
 
@@ -49,7 +50,7 @@ def lambda_handler(event, context):
 
 # Keep the main() function for local testing
 def main():
-    test_event = {'district_key': '2025fim'}
+    test_event = {'district_key': '2025isr'}
     print(lambda_handler(test_event, None))
 
 if __name__ == "__main__":

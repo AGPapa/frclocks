@@ -4,6 +4,10 @@ district_lookup:
 district_key: varchar
 display_name: varchar
 dcmp_capacity: int
+wcmp_capacity: int
+dcmp_impact_awards: int
+dcmp_ei_awards: int
+dcmp_ras_awards: int
 
 qual_points_lookup:
 event_size: int

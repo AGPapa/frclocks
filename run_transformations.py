@@ -2,8 +2,12 @@ import duckdb
 import os
 
 
-def run_transformations(con: duckdb.DuckDBPyConnection):
-    transforms_folder = 'transforms'
+def run_transformations(con: duckdb.DuckDBPyConnection, mode: str):
+    if mode == 'dcmp':
+        transforms_folder = 'dcmp_transforms'
+    else:
+        transforms_folder = 'transforms'
+
     sql_files = sorted([f for f in os.listdir(transforms_folder) if f.endswith('.sql')])
 
     for sql_file in sql_files:

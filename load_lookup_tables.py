@@ -17,7 +17,11 @@ def load_district_lookup_table(con: duckdb.DuckDBPyConnection):
         SELECT
             district_key,
             display_name,
-            CAST(dcmp_capacity AS INT) as dcmp_capacity
+            CAST(dcmp_capacity AS INT) as dcmp_capacity,
+            CAST(wcmp_capacity AS INT) as wcmp_capacity,
+            CAST(dcmp_impact_awards AS INT) as dcmp_impact_awards,
+            CAST(dcmp_ei_awards AS INT) as dcmp_ei_awards,
+            CAST(dcmp_ras_awards AS INT) as dcmp_ras_awards
         FROM read_csv_auto('lookups/district_lookup.csv')
     """)
 

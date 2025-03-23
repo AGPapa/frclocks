@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS team_event_states AS (
         AND winning_alliance IN ('red', 'blue')
         AND event_states.event_state NOT IN ('Pre-Event', 'Qualifications', 'Selections', 'Awards', 'Completed')
         GROUP BY events.event_key, alliances.alliance_name
-        HAVING COUNT(*) >= 2
+        HAVING COUNT(DISTINCT matches.match_key) >= 2
     ),
     eliminated_teams AS (
         SELECT event_key, captain_key AS team_key FROM eliminated_alliances

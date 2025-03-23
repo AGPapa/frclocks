@@ -12,17 +12,24 @@ CREATE TABLE IF NOT EXISTS team_event_states AS (
         LEFT JOIN matches ON events.event_key = matches.event_key
         LEFT JOIN alliances ON events.event_key = alliances.event_key
             AND (
-                matches.winning_alliance = 'blue' AND
                 (
-                    alliances.captain_key IN (matches.red_1_key, matches.red_2_key, matches.red_3_key)
-                    OR alliances.backup_key IN (matches.red_1_key, matches.red_2_key, matches.red_3_key)
+                    matches.winning_alliance = 'blue'
+                    AND matches.red_1_key IN (
+                        alliances.captain_key,
+                        alliances.first_selection_key,
+                        alliances.second_selection_key,
+                        alliances.backup_key
+                    )
                 )
-            ) OR 
-            (
-                matches.winning_alliance = 'red' AND
+                OR
                 (
-                    alliances.captain_key IN (matches.blue_1_key, matches.blue_2_key, matches.blue_3_key)
-                    OR alliances.backup_key IN (matches.blue_1_key, matches.blue_2_key, matches.blue_3_key)
+                    matches.winning_alliance = 'red'
+                    AND matches.blue_1_key IN (
+                        alliances.captain_key,
+                        alliances.first_selection_key,
+                        alliances.second_selection_key,
+                        alliances.backup_key
+                    )
                 )
             )
         WHERE matches.comp_level = 'sf'

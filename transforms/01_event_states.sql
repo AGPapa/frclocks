@@ -8,6 +8,13 @@ CREATE TABLE IF NOT EXISTS event_states AS (
         LEFT JOIN awards ON events.event_key = awards.event_key
         GROUP BY events.event_key
     ),
+    award_points AS (
+        SELECT
+            event_key,
+            MAX(award_points) AS max_award_points
+        FROM event_points
+        GROUP BY event_points.event_key
+    ),
     alliance_state AS (
         SELECT
             events.event_key,
@@ -40,8 +47,8 @@ CREATE TABLE IF NOT EXISTS event_states AS (
             WHEN ANY_VALUE(alliance_state.alliance_count) > 0 AND SUM(CASE WHEN matches.comp_level = 'sf' AND matches.winning_alliance IN ('red', 'blue') THEN 1 ELSE 0 END) < 7 THEN 'Elims 1 to 7'
             WHEN SUM(CASE WHEN matches.comp_level = 'sf' AND matches.winning_alliance IN ('red', 'blue') THEN 1 ELSE 0 END) BETWEEN 1 AND 12 THEN 'Elims ' || (SUM(CASE WHEN matches.comp_level = 'sf' AND matches.winning_alliance IN ('red', 'blue') THEN 1 ELSE 0 END) + 1)
             WHEN SUM(CASE WHEN matches.comp_level = 'f' AND matches.winning_alliance = 'red' THEN 1 ELSE 0 END) < 2 AND SUM(CASE WHEN matches.comp_level = 'f' AND matches.winning_alliance = 'blue' THEN 1 ELSE 0 END) < 2 THEN 'Finals'
-            WHEN ANY_VALUE(award_state.award_count) <= 10 THEN 'Awards'
-            WHEN ANY_VALUE(award_state.award_count) > 10 THEN 'Completed'
+            WHEN ANY_VALUE(award_state.award_count) <= 10 OR ANY_VALUE(award_points.max_award_points) < 10 THEN 'Awards' -- checks that the award points were actually given out on TBA (sometimes there's a delay)
+            WHEN ANY_VALUE(award_state.award_count) > 10 AND ANY_VALUE(award_points.max_award_points) = 10 THEN 'Completed'
             ELSE 'ERROR'
         END AS event_state,
         CASE WHEN event_state = 'Completed' THEN '93C47D'
@@ -49,6 +56,7 @@ CREATE TABLE IF NOT EXISTS event_states AS (
         END AS color
     FROM events
     LEFT JOIN award_state ON events.event_key = award_state.event_key
+    LEFT JOIN award_points ON events.event_key = award_points.event_key
     LEFT JOIN alliance_state ON events.event_key = alliance_state.event_key
     LEFT JOIN quals_state ON events.event_key = quals_state.event_key
     LEFT JOIN matches ON events.event_key = matches.event_key

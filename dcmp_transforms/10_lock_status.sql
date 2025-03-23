@@ -12,7 +12,9 @@ CREATE TABLE IF NOT EXISTS lock_status AS (
         CAST(SUM(following_teams.following_team_points_needed_to_pass) AS INTEGER) AS total_points_to_pass,
         ANY_VALUE(district_points_remaining.points_remaining) AS total_points_remaining,
         CASE
-        WHEN ANY_VALUE(qualifying_award_winners.team_key) IS NOT NULL THEN 'Impact'
+        WHEN ANY_VALUE(qualifying_award_winners.is_prequalified) THEN 'Prequalified'
+        WHEN ANY_VALUE(qualifying_award_winners.award_type) IS NOT NULL THEN ANY_VALUE(qualifying_award_winners.award_type)
+        WHEN ANY_VALUE(qualifying_award_winners.is_winner) THEN 'Winner'
         WHEN ANY_VALUE(district_points_remaining.points_remaining) = 0 AND ANY_VALUE(district_rankings_without_qualify_awards.active_team_rank) <= ANY_VALUE(wcmp_spots.wcmp_spots) THEN '100%'
         WHEN SUM(CASE WHEN following_teams.following_team_can_pass THEN 1 ELSE 0 END) < ANY_VALUE(following_teams.teams_to_pass) THEN '100%'
         WHEN SUM(following_teams.following_team_points_needed_to_pass) > ANY_VALUE(district_points_remaining.points_remaining) THEN '100%'
@@ -24,6 +26,10 @@ CREATE TABLE IF NOT EXISTS lock_status AS (
         WHEN lock_status = '100%' THEN '6AA84F'
         WHEN lock_status = '-' THEN 'E06666'
         WHEN lock_status = 'Impact' THEN '6D9EEB'
+        WHEN lock_status = 'Winner' THEN '6D9EEB'
+        WHEN lock_status = 'EI' THEN '6D9EEB'
+        WHEN lock_status = 'RAS' THEN '6D9EEB'
+        WHEN lock_status = 'Prequalified' THEN '6D9EEB' -- TODO: Maybe purple?
         WHEN ANY_VALUE(following_teams.following_team_key) IS NOT NULL THEN 'B6D7A8'
         ELSE 'FFD966'
         END AS color
@@ -34,6 +40,8 @@ CREATE TABLE IF NOT EXISTS lock_status AS (
     LEFT JOIN teams_to_pass ON adjusted_district_rankings.team_key = teams_to_pass.team_key
     LEFT JOIN district_rankings_without_qualify_awards ON adjusted_district_rankings.team_key = district_rankings_without_qualify_awards.team_key
     LEFT JOIN following_teams ON adjusted_district_rankings.team_key = following_teams.team_key
-    LEFT JOIN qualifying_award_winners ON adjusted_district_rankings.team_key = qualifying_award_winners.team_key
+    LEFT JOIN qualifying_award_winners ON
+        adjusted_district_rankings.district_key = qualifying_award_winners.district_key
+        AND adjusted_district_rankings.team_key = qualifying_award_winners.team_key
     GROUP BY adjusted_district_rankings.team_key
 )

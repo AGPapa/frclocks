@@ -49,18 +49,24 @@ CREATE TABLE IF NOT EXISTS qualifying_award_winners AS (
         SELECT
             events.district_key,
             awards.team_key,
-            awards.award_type
+            CASE WHEN awards.award_type = 0 THEN 'Impact'
+            WHEN awards.award_type = 9 THEN 'EI'
+            WHEN awards.award_type = 10 THEN 'RAS'
+            END AS award_type
         FROM awards
         JOIN events ON awards.event_key = events.event_key
-        WHERE award_type = 0 -- TODO: Add EI and RAS awards
+        WHERE award_type IN (0, 9, 10)
         AND events.event_type = 'District Championship'
     )
     SELECT
-        COALESCE(winning_teams.district_key, award_teams.district_key) AS district_key,
-        COALESCE(winning_teams.team_key, award_teams.team_key) AS team_key,
+        COALESCE(winning_teams.district_key, award_teams.district_key, prequalified_teams.district_key) AS district_key,
+        COALESCE(winning_teams.team_key, award_teams.team_key, prequalified_teams.team_key) AS team_key,
         award_teams.award_type AS award_type,
-        winning_teams.team_key IS NOT NULL AS is_winner
+        winning_teams.team_key IS NOT NULL AS is_winner,
+        prequalified_teams.team_key IS NOT NULL AS is_prequalified
     FROM award_teams
-    LEFT JOIN winning_teams ON award_teams.district_key = winning_teams.district_key
+    FULL JOIN winning_teams ON award_teams.district_key = winning_teams.district_key
         AND award_teams.team_key = winning_teams.team_key
+    FULL JOIN prequalified_teams ON COALESCE(award_teams.district_key, winning_teams.district_key) = prequalified_teams.district_key
+        AND COALESCE(award_teams.team_key, winning_teams.team_key) = prequalified_teams.team_key
 )

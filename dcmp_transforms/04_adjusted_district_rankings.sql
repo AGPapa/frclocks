@@ -32,8 +32,7 @@ CREATE TABLE IF NOT EXISTS adjusted_district_rankings AS (
         JOIN event_states ON event_points.event_key = event_states.event_key
         LEFT JOIN team_event_states ON event_points.event_key = event_states.event_key
                             AND team_event_states.team_key = event_points.team_key
-        WHERE event_states.event_state != 'Completed'
-        AND event_states.event_type = 'District Championship'
+        WHERE event_states.event_type = 'District Championship'
         GROUP BY event_points.team_key, event_states.district_key
     )
     SELECT

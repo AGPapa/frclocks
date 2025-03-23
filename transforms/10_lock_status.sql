@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS lock_status AS (
         CASE
         WHEN ANY_VALUE(impact_award_winners.team_key) IS NOT NULL THEN 'Impact'
         WHEN ANY_VALUE(district_points_remaining.points_remaining) = 0 AND ANY_VALUE(district_rankings_without_impact.active_team_rank) <= (ANY_VALUE(district_lookup.dcmp_capacity) - ANY_VALUE(district_points_remaining.total_district_events)) THEN '100%'
-        WHEN SUM(CASE WHEN following_teams.following_team_can_pass THEN 1 ELSE 0 END) < ANY_VALUE(following_teams.teams_to_pass) THEN '100%'
+        WHEN SUM(CASE WHEN following_teams.following_team_can_pass THEN 1 ELSE 0 END) < ANY_VALUE(teams_to_pass.teams_to_pass) THEN '100%'
         WHEN SUM(following_teams.following_team_points_needed_to_pass) > ANY_VALUE(district_points_remaining.points_remaining) THEN '100%'
         WHEN ANY_VALUE(num_of_teams.num_of_teams) = ANY_VALUE(district_lookup.dcmp_capacity) THEN '100%'
         WHEN ANY_VALUE(district_rankings_without_impact.events_remaining) = 0 AND ANY_VALUE(following_teams.following_team_key) IS NULL THEN '-'

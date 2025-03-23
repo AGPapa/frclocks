@@ -12,14 +12,14 @@ CREATE TABLE IF NOT EXISTS team_event_states AS (
         LEFT JOIN matches ON events.event_key = matches.event_key
         LEFT JOIN alliances ON events.event_key = alliances.event_key
             AND (
-                winning_alliance = 'blue' AND
+                matches.winning_alliance = 'blue' AND
                 (
                     alliances.captain_key IN (matches.red_1_key, matches.red_2_key, matches.red_3_key)
                     OR alliances.backup_key IN (matches.red_1_key, matches.red_2_key, matches.red_3_key)
                 )
-            ) OR 
+            ) OR
             (
-                winning_alliance = 'red' AND
+                matches.winning_alliance = 'red' AND
                 (
                     alliances.captain_key IN (matches.blue_1_key, matches.blue_2_key, matches.blue_3_key)
                     OR alliances.backup_key IN (matches.blue_1_key, matches.blue_2_key, matches.blue_3_key)
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS team_event_states AS (
         AND winning_alliance IN ('red', 'blue')
         AND event_states.event_state NOT IN ('Pre-Event', 'Qualifications', 'Selections', 'Awards', 'Completed')
         GROUP BY events.event_key, alliances.alliance_name
-        HAVING COUNT(*) >= 2
+        HAVING COUNT(DISTINCT matches.match_key) >= 2
     ),
     eliminated_teams AS (
         SELECT event_key, captain_key AS team_key FROM eliminated_alliances

@@ -35,7 +35,17 @@ def load_points_adjustments(con: duckdb.DuckDBPyConnection):
         FROM read_csv_auto('lookups/points_adjustments.csv')
     """)
 
+def load_prequalified_teams(con: duckdb.DuckDBPyConnection):
+    con.execute("""
+        CREATE TABLE IF NOT EXISTS prequalified_teams AS
+        SELECT
+            district_key,
+            team_key
+        FROM read_csv_auto('lookups/prequalified_teams.csv')
+    """)
+
 def load_lookup_tables(con: duckdb.DuckDBPyConnection):
     load_qual_lookup_table(con)
     load_district_lookup_table(con)
     load_points_adjustments(con)
+    load_prequalified_teams(con)

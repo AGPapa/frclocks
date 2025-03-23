@@ -19,6 +19,10 @@ district_key: varchar
 team_key: varchar
 points_adjustment: int
 
+prequalified_teams:
+district_key: varchar
+team_key: varchar
+
 -- Raw Data --
 
 events

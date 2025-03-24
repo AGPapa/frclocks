@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS adjusted_district_rankings AS (
     ),
     dcmp AS (
         SELECT
-            event_points.team_key,
+            event_teams.team_key,
             event_states.district_key,
             SUM(event_points.points) AS points,
             SUM(CASE WHEN event_states.event_state NOT IN ('Completed') THEN 1 ELSE 0 END) AS events_remaining,
@@ -28,12 +28,13 @@ CREATE TABLE IF NOT EXISTS adjusted_district_rankings AS (
             SUM(CASE WHEN event_states.event_state NOT IN ('Finals', 'Awards', 'Completed')  AND COALESCE(team_event_states.elim_eligible, TRUE) THEN 1 ELSE 0 END) AS double_elims_remaining,
             SUM(CASE WHEN event_states.event_state NOT IN ('Awards', 'Completed') AND COALESCE(team_event_states.elim_eligible, TRUE) THEN 1 ELSE 0 END) AS finals_remaining,
             SUM(CASE WHEN event_states.event_state NOT IN ('Completed') AND COALESCE(team_event_states.award_eligible, TRUE) THEN 1 ELSE 0 END) AS awards_remaining
-        FROM event_points
-        JOIN event_states ON event_points.event_key = event_states.event_key
-        LEFT JOIN team_event_states ON event_points.event_key = event_states.event_key
-                            AND team_event_states.team_key = event_points.team_key
+        FROM event_teams
+        JOIN event_states ON event_teams.event_key = event_states.event_key
+        LEFT JOIN event_points ON event_teams.event_key = event_points.event_key AND event_points.team_key = event_teams.team_key
+        LEFT JOIN team_event_states ON event_teams.event_key = event_states.event_key
+                            AND team_event_states.team_key = event_teams.team_key
         WHERE event_states.event_type = 'District Championship'
-        GROUP BY event_points.team_key, event_states.district_key
+        GROUP BY event_teams.team_key, event_states.district_key
     )
     SELECT
         district_rankings.team_key,

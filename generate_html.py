@@ -158,8 +158,10 @@ def generate_dcmp_page(district_key: str, con: duckdb.DuckDBPyConnection):
     rankings = duckdb_result_to_dict(f"""
         SELECT
             rank,
+            SUBSTRING(team_key, 4) AS team_number,
             team_key,
             district_event_points,
+            rookie_bonus,
             dcmp_points,
             total_points,
             lock_status,

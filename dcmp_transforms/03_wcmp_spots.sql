@@ -35,5 +35,5 @@ CREATE TABLE IF NOT EXISTS wcmp_spots AS (
             + 2 * COALESCE(bonus_point_spots.num_triple_qualifying_awards, 0) -- If a prequalified also gets two qualifying awards, then an two extra point spots are available
         AS wcmp_spots
     FROM district_lookup
-    JOIN bonus_point_spots ON district_lookup.district_key = bonus_point_spots.district_key
+    LEFT JOIN bonus_point_spots ON district_lookup.district_key = bonus_point_spots.district_key
 )

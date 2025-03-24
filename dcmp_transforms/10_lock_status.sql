@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS lock_status AS (
         WHEN lock_status = 'Winner' THEN '6D9EEB'
         WHEN lock_status = 'EI' THEN '6D9EEB'
         WHEN lock_status = 'RAS' THEN '6D9EEB'
-        WHEN lock_status = 'Prequalified' THEN '6D9EEB' -- TODO: Maybe purple?
+        WHEN lock_status = 'Prequalified' THEN '8E7CC3'
         WHEN ANY_VALUE(following_teams.following_team_key) IS NOT NULL THEN 'B6D7A8'
         ELSE 'FFD966'
         END AS color

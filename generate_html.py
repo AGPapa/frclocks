@@ -99,7 +99,7 @@ def generate_district_page(district_key: str, con: duckdb.DuckDBPyConnection):
 
     # Get district data from database
     rankings = duckdb_result_to_dict(f"""
-        SELECT 
+        SELECT
             rank,
             SUBSTRING(team_key, 4) AS team_number,
             team_key,
@@ -109,14 +109,14 @@ def generate_district_page(district_key: str, con: duckdb.DuckDBPyConnection):
             total_points,
             lock_status,
             color
-        FROM lock_status 
+        FROM lock_status
         WHERE district_key = '{district_key}'
         ORDER BY rank
     """, con)
 
     # Get district events data
     events = duckdb_result_to_dict(f"""
-        SELECT 
+        SELECT
             event_states.event_key AS key,
             event_states.name,
             event_states.event_state AS status,
@@ -131,9 +131,62 @@ def generate_district_page(district_key: str, con: duckdb.DuckDBPyConnection):
 
     # Get district summary stats
     stats = duckdb_result_to_dict(f"""
-        SELECT 
+        SELECT
             district_points_remaining.points_remaining,
             district_lookup.dcmp_capacity,
+            district_lookup.display_name
+        FROM district_points_remaining
+        JOIN district_lookup ON district_points_remaining.district_key = district_lookup.district_key
+        WHERE district_points_remaining.district_key = '{district_key}'
+    """, con)[0]
+
+    context = {
+        'rankings': rankings,
+        'events': events,
+        'district_stats': stats,
+        'env': ENV,
+        'ga_tracking_id': GA_TRACKING_ID
+    }
+
+    html_content = template.render(**context)
+    write_file(html_content, f"districts/{district_key[4:]}.html")
+
+def generate_dcmp_page(district_key: str, con: duckdb.DuckDBPyConnection):
+    env = Environment(loader=FileSystemLoader('html_templates'))
+    template = env.get_template('dcmp.html')
+
+    rankings = duckdb_result_to_dict(f"""
+        SELECT
+            rank,
+            team_key,
+            district_event_points,
+            dcmp_points,
+            total_points,
+            lock_status,
+            color
+        FROM lock_status
+        WHERE district_key = '{district_key}'
+        ORDER BY rank
+    """, con)
+
+    events = duckdb_result_to_dict(f"""
+        SELECT
+            event_states.event_key AS key,
+            event_states.name,
+            event_states.event_state AS status,
+            event_points_remaining.team_count,
+            event_points_remaining.points_remaining,
+            event_states.color
+        FROM event_states
+        JOIN event_points_remaining ON event_states.event_key = event_points_remaining.event_key
+        WHERE event_states.district_key = '{district_key}'
+        ORDER BY event_states.start_date, event_states.name
+    """, con)
+
+    stats = duckdb_result_to_dict(f"""
+        SELECT
+            district_points_remaining.points_remaining,
+            district_lookup.wcmp_capacity,
             district_lookup.display_name
         FROM district_points_remaining
         JOIN district_lookup ON district_points_remaining.district_key = district_lookup.district_key
@@ -157,7 +210,7 @@ def generate_event_page(event_key: str, con: duckdb.DuckDBPyConnection):
 
     # Get event data
     event = duckdb_result_to_dict(f"""
-        SELECT 
+        SELECT
             event_states.name,
             event_states.event_state AS status,
             event_states.color
@@ -167,7 +220,7 @@ def generate_event_page(event_key: str, con: duckdb.DuckDBPyConnection):
 
     # Get points remaining data
     points_remaining = duckdb_result_to_dict(f"""
-        SELECT 
+        SELECT
             quals_adjusted_points_remaining,
             alliance_selection_points_remaining,
             elimination_points_remaining,
@@ -191,7 +244,7 @@ def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
     env = Environment(loader=FileSystemLoader('html_templates'))
     template = env.get_template('team.html')
     lock_status = duckdb_result_to_dict(f"""
-        SELECT 
+        SELECT
             team_key,
             total_inflated_points,
             teams_to_pass,
@@ -204,7 +257,7 @@ def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
     """, con)[0]
 
     following_teams = duckdb_result_to_dict(f"""
-        SELECT 
+        SELECT
             following_team_key,
             SUBSTRING(following_team_key, 4) AS following_team_number,
             following_team_rank,
@@ -230,18 +283,21 @@ def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
         write_file(html_content, f"teams/{team_key}.html")
 
 
-def generate_html(district_key: str, con: duckdb.DuckDBPyConnection):
+def generate_html(district_key: str, con: duckdb.DuckDBPyConnection, mode: str):
     write_static_files()
     generate_homepage()
-    generate_district_page(district_key, con)
+    if mode == "district":
+        generate_district_page(district_key, con)
 
-    events = duckdb_result_to_dict(f"SELECT event_key FROM events WHERE district_key = '{district_key}' and event_type = 'District'", con)
-    for event in events:
-        generate_event_page(event['event_key'], con)
+        events = duckdb_result_to_dict(f"SELECT event_key FROM events WHERE district_key = '{district_key}' and event_type = 'District'", con)
+        for event in events:
+            generate_event_page(event['event_key'], con)
 
-    teams = duckdb_result_to_dict(f"SELECT team_key FROM district_rankings WHERE district_key = '{district_key}'", con)
-    for team in teams:
-        generate_team_page(team['team_key'], con)
+        teams = duckdb_result_to_dict(f"SELECT team_key FROM district_rankings WHERE district_key = '{district_key}'", con)
+        for team in teams:
+            generate_team_page(team['team_key'], con)
+    elif mode == "dcmp":
+        generate_dcmp_page(district_key, con)
 
 if __name__ == "__main__":
     con = duckdb.connect()

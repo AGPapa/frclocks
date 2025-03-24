@@ -30,7 +30,7 @@ def lambda_handler(event, context):
         run_transformations_time = time.time()
         print(f"Time to run transformations: {run_transformations_time - collect_data_time:.2f} seconds")
 
-        generate_html(district_key, con)
+        generate_html(district_key, con, mode)
         generate_html_time = time.time()
         print(f"Time to generate HTML: {generate_html_time - run_transformations_time:.2f} seconds")
 

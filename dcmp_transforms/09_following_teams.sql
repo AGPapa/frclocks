@@ -14,11 +14,11 @@ CREATE TABLE IF NOT EXISTS following_teams AS (
             finals_remaining,
             awards_remaining,
             points
-                + 18 * quals_remaining
-                + 16 * selections_remaining
-                + 20 * double_elims_remaining
-                + 10 * finals_remaining
-                + 8 * awards_remaining
+                + 18 * quals_remaining * 3
+                + 16 * selections_remaining * 3
+                + 20 * double_elims_remaining * 3
+                + 10 * finals_remaining * 3
+                + 8 * awards_remaining * 3
             AS max_possible_points
         FROM district_rankings_without_qualify_awards
         WHERE events_remaining > 0

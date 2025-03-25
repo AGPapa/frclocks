@@ -30,7 +30,7 @@ def duckdb_result_to_dict(query: str, con: duckdb.DuckDBPyConnection):
     columns = [col[0] for col in result.description]
     return [dict(zip(columns, row)) for row in result.fetchall()]
 
-def write_static_files():
+def write_static_files(mode: str):
     if ENV == "PROD":
         s3 = boto3.client('s3')
         with open("static/css/style.css", "r") as file:
@@ -57,14 +57,6 @@ def write_static_files():
                 Body=image_content,
                 ContentType='image/png'
             )
-        with open("static/images/district_key.png", "rb") as file:
-            image_content = file.read()
-            s3.put_object(
-                Bucket=S3_BUCKET,
-                Key="images/district_key.png",
-                Body=image_content,
-                ContentType='image/png'
-            )
         with open("static/images/lock.svg", "rb") as file:
             image_content = file.read()
             s3.put_object(
@@ -80,6 +72,25 @@ def write_static_files():
                 Key="images/lock.ico",
                 Body=image_content,
                 ContentType='image/x-icon'
+            )
+
+        if mode == "district":
+            with open("static/images/district_key.png", "rb") as file:
+                image_content = file.read()
+            s3.put_object(
+                Bucket=S3_BUCKET,
+                Key="images/district_key.png",
+                Body=image_content,
+                ContentType='image/png'
+            )
+        elif mode == "dcmp":
+            with open("static/images/dcmp_key.png", "rb") as file:
+                image_content = file.read()
+            s3.put_object(
+                Bucket=S3_BUCKET,
+                Key="images/dcmp_key.png",
+                Body=image_content,
+                ContentType='image/png'
             )
 
 def generate_homepage():
@@ -286,7 +297,7 @@ def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
 
 
 def generate_html(district_key: str, con: duckdb.DuckDBPyConnection, mode: str):
-    write_static_files()
+    write_static_files(mode)
     generate_homepage()
     if mode == "district":
         generate_district_page(district_key, con)

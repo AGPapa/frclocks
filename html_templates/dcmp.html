@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% include 'includes/header.html' %}
+<body>
+    <div class="container">
+        {% include 'includes/nav.html' %}
+        <h2>{{ district_stats.display_name }} District</h2>
+        <table class="stats-table">
+            <tr class="stats-table-header">
+                <th style="width: 270px;">Statistic</th>
+                <th style="width: 58px;">Value</th>
+            </tr>
+            <tr>
+                <td class="col-statistic">Points Remaining in the District</td>
+                <td class="col-value">{{ district_stats.points_remaining }}</td>
+            </tr>
+            <tr>
+                <td class="col-statistic">Available World Champs Spots</td>
+                <td class="col-value">{{ district_stats.wcmp_capacity }}</td>
+            </tr>
+        </table>
+
+        <h2>Events</h2>
+        <table class="events-table">
+            <tr class="event-table-header">
+                <th>Event</th>
+                <th style="width: 130px;">Status</th>
+                <th style="width: 90px;"># Teams</th>
+                <th style="width: 125px;">Pts Available</th>
+            </tr>
+            {% for event in events %}
+            <tr style="background-color: #{{ event.color }}">
+                <td class="col-event"><a href="https://www.thebluealliance.com/event/{{ event.key }}">{{ event.name }}</a></td>
+                <td class="col-status">{{ event.status }}</td>
+                <td class="col-teams">{{ event.team_count }}</td>
+                <td class="col-points"><a href="../events/{{ event.key }}.html">{{ event.points_remaining }}</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h2>District Rankings</h2>
+        <img src="{% if env == 'DEV' %}../../static/images/dcmp_key.png{% else %}/images/dcmp_key.png{% endif %}" alt="key"/>
+        <br/>
+        <br/>
+        <table class="rankings-table">
+            <tr class="rankings-table-header">
+                <th style="width: 60px;">Rank</th>
+                <th style="width: 100px;">Team</th>
+                <th style="width: 100px;">Districts</th>
+                <th style="width: 100px;">Age Bonus</th>
+                <th style="width: 100px;">DCMP</th>
+                <th style="width: 100px;">Total</th>
+                <th style="width: 100px;">Locked?</th>
+            </tr>
+            {% for team in rankings %}
+            <tr style="background-color: #{{ team.color }}">
+                <td class="col-rank">{{ team.rank }}</td>
+                <td class="col-team"><a href="https://www.thebluealliance.com/team/{{ team.team_number }}"><b>{{ team.team_key }}</b></a></td>
+                <td class="col-event1">{{ team.district_event_points or 0 }}</td>
+                <td class="col-age-bonus">{{ team.rookie_bonus }}</td>
+                <td class="col-event2">{{ team.dcmp_points or 0 }}</td>
+                <td class="col-total">{{ team.total_points }}</td>
+                {% if team.lock_status != "0%" and team.lock_status != "-" and team.lock_status != "Impact" and team.lock_status != "Winner" and team.lock_status != "EI" and team.lock_status != "RAS" and team.lock_status != "Prequalified" %}
+                <td class="col-locked"><a href="../teams/{{ team.team_key }}.html">{{ team.lock_status }}</a></td>
+                {% else %}
+                <td class="col-locked">{{ team.lock_status }}</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
+        
+        {% include 'includes/footer.html' %}
+    </div>
+</body>
+</html>

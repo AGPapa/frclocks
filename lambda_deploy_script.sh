@@ -2,6 +2,7 @@
 rm -rf deployment
 mkdir deployment
 mkdir deployment/transforms
+mkdir deployment/dcmp_transforms
 mkdir deployment/lookups
 mkdir deployment/html_templates
 mkdir deployment/html_templates/includes
@@ -10,6 +11,7 @@ mkdir deployment/static/css
 mkdir deployment/static/images
 cp *.py ./deployment/
 cp transforms/*.sql ./deployment/transforms/
+cp dcmp_transforms/*.sql ./deployment/dcmp_transforms/
 cp lookups/*.csv ./deployment/lookups/
 cp html_templates/*.html ./deployment/html_templates/
 cp html_templates/includes/*.html ./deployment/html_templates/includes/

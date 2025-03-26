@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS wcmp_spots AS (
-    with
+    WITH
     bonus_point_spots AS (
         SELECT
             event_states.district_key,

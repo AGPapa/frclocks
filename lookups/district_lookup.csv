@@ -1,14 +1,14 @@
-district_key,display_name,dcmp_capacity,wcmp_capacity,dcmp_impact_awards,dcmp_ei_awards,dcmp_ras_awards
-2024fma,Mid-Atlantic,60,22,2,2,1
-2025chs,Chesapeake,54,17,2,2,1
-2025isr,Israel,45,10,1,1,1
-2025fin,Indiana,38,12,1,1,1
-2025fim,Michigan,160,80,4,1,2
-2025fma,Mid-Atlantic,60,23,2,2,1
-2025ne,New England,96,31,3,2,1
-2025fnc,North Carolina,40,14,1,2,2
-2025ont,Ontario,100,22,2,1,1
-2025pnw,Pacific Northwest,50,22,2,2,1
-2025pch,Peachtree,45,12,1,2,1
-2025fsc,South Carolina,28,5,1,1,1
-2025fit,Texas,90,28,2,2,2
+district_key,display_name,dcmp_name,dcmp_capacity,wcmp_capacity,dcmp_impact_awards,dcmp_ei_awards,dcmp_ras_awards
+2024fma,Mid-Atlantic,District Championship,60,22,2,2,1
+2025chs,Chesapeake,District Championship,54,17,2,2,1
+2025isr,Israel,National Championship,45,10,1,1,1
+2025fin,Indiana,State Championship,38,12,1,1,1
+2025fim,Michigan,State Championship,160,80,4,1,2
+2025fma,Mid-Atlantic,District Championship,60,23,2,2,1
+2025ne,New England,District Championship,96,31,3,2,1
+2025fnc,North Carolina,State Championship,40,14,1,2,2
+2025ont,Ontario,Provincial Championship,100,22,2,1,1
+2025pnw,Pacific Northwest,District Championship,50,22,2,2,1
+2025pch,Peachtree,State Championship,45,12,1,2,1
+2025fsc,South Carolina,State Championship,28,5,1,1,1
+2025fit,Texas,State Championship,90,28,2,2,2

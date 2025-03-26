@@ -185,13 +185,14 @@ def generate_dcmp_page(district_key: str, con: duckdb.DuckDBPyConnection):
     events = duckdb_result_to_dict(f"""
         SELECT
             event_states.event_key AS key,
-            event_states.name,
+            district_lookup.dcmp_name AS name,
             event_states.event_state AS status,
             event_points_remaining.team_count,
             event_points_remaining.points_remaining,
             event_states.color
         FROM event_states
         JOIN event_points_remaining ON event_states.event_key = event_points_remaining.event_key
+        JOIN district_lookup ON event_states.district_key = district_lookup.district_key
         WHERE event_states.district_key = '{district_key}'
         ORDER BY event_states.start_date, event_states.name
     """, con)

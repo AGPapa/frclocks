@@ -13,8 +13,8 @@ CREATE TABLE IF NOT EXISTS event_points_remaining AS (
             event_key,
             SUM(award_points) AS awarded_award_points
         FROM event_points
-        WHERE award_points != 10 -- don't count the impact award
-        AND award_points != 8 -- don't count the engineering inspiration award or rookie all star award
+        WHERE award_points != 10 * 3 -- don't count the impact award
+        AND award_points != 8 * 3 -- don't count the engineering inspiration award or rookie all star award
         GROUP BY event_key
     ),
     event_teams_count AS (
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS event_points_remaining AS (
         events.event_key,
         event_teams_count.team_count,
         CASE WHEN event_state != 'Completed' THEN
-            60 -- don't include impact, engineering inspiration, or rookie all star awards
+            60 * 3 -- don't include impact, engineering inspiration, or rookie all star awards
             - COALESCE(awarded_award_points.awarded_award_points, 0)
         ELSE 0 END * 3 AS award_points_remaining,
         CASE WHEN event_states.event_state = 'Finals' THEN 31 -- 30 points for match winner, 1 for possible rounding if there's backup team for finalist

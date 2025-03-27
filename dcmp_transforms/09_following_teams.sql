@@ -38,17 +38,18 @@ CREATE TABLE IF NOT EXISTS following_teams AS (
                 ROW_NUMBER() OVER (PARTITION BY teams_to_pass.team_key, following_team_can_pass ORDER BY teams_with_remaining_events.rank ASC)
                 ELSE NULL
             END AS following_team_order,
-            CASE WHEN following_team_can_pass THEN
+            CASE WHEN following_team_can_pass AND event_states.event_state IN ('Finals', 'Awards') THEN
+                CAST(CEIL((teams_to_pass.points - teams_with_remaining_events.points) / 15.0) * 15 AS INTEGER) -- round up to the nearest multiple of 15 during finals and awards
+            WHEN following_team_can_pass THEN
                 CAST(CEIL((teams_to_pass.points - teams_with_remaining_events.points) / 3.0) * 3 AS INTEGER) -- round up to the nearest multiple of 3
             ELSE NULL END AS following_team_points_needed_to_pass,
-            CASE WHEN following_team_can_pass THEN CAST(teams_to_pass.points - teams_with_remaining_events.points AS VARCHAR)
-            ELSE '-' END AS following_team_points_needed_to_pass_status,
             CASE WHEN following_team_can_pass THEN 'FFD966'
             ELSE 'E06666' END AS following_team_color
         FROM teams_to_pass
         LEFT JOIN teams_with_remaining_events ON
                 teams_to_pass.team_key != teams_with_remaining_events.team_key
                 AND teams_with_remaining_events.district_key = teams_to_pass.district_key
+        LEFT JOIN event_states ON teams_to_pass.district_key = event_states.district_key AND event_states.event_type = 'District Championship'
         WHERE teams_with_remaining_events.active_team_rank > teams_to_pass.active_team_rank
     ),
     max_rank_to_display AS (

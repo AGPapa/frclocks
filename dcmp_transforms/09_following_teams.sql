@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS following_teams AS (
                 ELSE NULL
             END AS following_team_order,
             CASE WHEN following_team_can_pass THEN
-                teams_to_pass.points - teams_with_remaining_events.points
+                CAST(CEIL((teams_to_pass.points - teams_with_remaining_events.points) / 3.0) * 3 AS INTEGER) -- round up to the nearest multiple of 3
             ELSE NULL END AS following_team_points_needed_to_pass,
             CASE WHEN following_team_can_pass THEN CAST(teams_to_pass.points - teams_with_remaining_events.points AS VARCHAR)
             ELSE '-' END AS following_team_points_needed_to_pass_status,

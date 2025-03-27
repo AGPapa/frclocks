@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS following_teams_v2 AS (
     SELECT
         ranked_following_teams.*
     FROM ranked_following_teams
-    JOIN max_rank_to_display ON ranked_following_teams.team_key = max_rank_to_display.team_key
     JOIN teams_that_can_pass ON ranked_following_teams.team_key = teams_that_can_pass.team_key
+    LEFT JOIN max_rank_to_display ON ranked_following_teams.team_key = max_rank_to_display.team_key
     WHERE ranked_following_teams.following_team_rank <= max_rank_to_display.max_rank OR teams_that_can_pass.total_teams_that_can_pass < ranked_following_teams.teams_to_pass
 )

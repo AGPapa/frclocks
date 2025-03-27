@@ -254,6 +254,42 @@ def generate_event_page(event_key: str, con: duckdb.DuckDBPyConnection):
     html_content = template.render(**context)
     write_file(html_content, f"events/{event_key}.html")
 
+def generate_dcmp_event_page(event_key: str, con: duckdb.DuckDBPyConnection):
+    env = Environment(loader=FileSystemLoader('html_templates'))
+    template = env.get_template('dcmp_event.html')
+
+    # Get event data
+    event = duckdb_result_to_dict(f"""
+        SELECT
+            event_states.name,
+            event_states.event_state AS status,
+            event_states.color
+        FROM event_states
+        WHERE event_states.event_key = '{event_key}'
+    """, con)[0]
+
+    # Get points remaining data
+    points_remaining = duckdb_result_to_dict(f"""
+        SELECT
+            quals_points_remaining,
+            alliance_selection_points_remaining,
+            elimination_points_remaining,
+            award_points_remaining,
+            points_remaining
+        FROM event_points_remaining
+        WHERE event_key = '{event_key}'
+    """, con)[0]
+
+    context = {
+        'event': event,
+        'points_remaining': points_remaining,
+        'env': ENV,
+        'ga_tracking_id': GA_TRACKING_ID
+    }
+
+    html_content = template.render(**context)
+    write_file(html_content, f"events/{event_key}.html")
+
 def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
     env = Environment(loader=FileSystemLoader('html_templates'))
     template = env.get_template('team.html')
@@ -296,6 +332,48 @@ def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
         html_content = template.render(**context)
         write_file(html_content, f"teams/{team_key}.html")
 
+def generate_dcmp_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
+    env = Environment(loader=FileSystemLoader('html_templates'))
+    template = env.get_template('dcmp_team.html')
+    lock_status = duckdb_result_to_dict(f"""
+        SELECT
+            team_key,
+            total_points,
+            teams_to_pass,
+            total_teams_that_can_pass,
+            total_points_to_pass,
+            total_points_remaining,
+            lock_status
+        FROM lock_status
+        WHERE team_key = '{team_key}'
+    """, con)[0]
+
+    following_teams = duckdb_result_to_dict(f"""
+        SELECT
+            following_team_key,
+            SUBSTRING(following_team_key, 4) AS following_team_number,
+            following_team_rank,
+            following_team_points AS points_total,
+            following_team_max_possible_points AS max_points,
+            COALESCE(CAST(following_team_points_needed_to_pass AS VARCHAR), '-') AS points_to_pass,
+            following_team_color AS color
+        FROM following_teams
+        WHERE team_key = '{team_key}'
+        ORDER BY following_team_rank ASC
+    """, con)
+
+    context = {
+        'lock_status': lock_status,
+        'following_teams': following_teams,
+        'env': ENV,
+        'ga_tracking_id': GA_TRACKING_ID
+    }
+
+    # Only generate team pages if needed
+    if lock_status['lock_status'] not in ['-', '0%', 'Impact', 'EI', 'RAS','Prequalified']:
+        html_content = template.render(**context)
+        write_file(html_content, f"teams/{team_key}.html")
+
 
 def generate_html(district_key: str, con: duckdb.DuckDBPyConnection, mode: str):
     write_static_files(mode)
@@ -312,6 +390,14 @@ def generate_html(district_key: str, con: duckdb.DuckDBPyConnection, mode: str):
             generate_team_page(team['team_key'], con)
     elif mode == "dcmp":
         generate_dcmp_page(district_key, con)
+
+        events = duckdb_result_to_dict(f"SELECT event_key FROM events WHERE district_key = '{district_key}' and event_type = 'District Championship'", con)
+        for event in events:
+            generate_dcmp_event_page(event['event_key'], con)
+
+        teams = duckdb_result_to_dict(f"SELECT team_key FROM district_rankings WHERE district_key = '{district_key}'", con)
+        for team in teams:
+            generate_dcmp_team_page(team['team_key'], con)
 
 if __name__ == "__main__":
     con = duckdb.connect()

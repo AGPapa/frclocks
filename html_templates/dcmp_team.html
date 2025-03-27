@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% include 'includes/header.html' %}
+<body>
+    <div class="container">
+        {% include 'includes/nav.html' %}
+
+        <h2>{{ lock_status.team_key }}</h2>
+        <table class="team-points-table">
+            <tr class="team-points-header">
+                <th>Description</th>
+                <th style="width: 75px;">Points</th>
+            </tr>
+            <tr>
+                <td class="col-description">Points</td>
+                <td class="col-points" align="right">{{ lock_status.total_points }}</td>
+            </tr>
+            <tr>
+                <td class="col-description">Number of teams that need to pass {{ lock_status.team_key }}</td>
+                <td class="col-points" align="right">{{ lock_status.teams_to_pass }}</td>
+            </tr>
+            {% if lock_status.total_teams_that_can_pass < lock_status.teams_to_pass %}
+            <tr>
+                <td class="col-description">Number of teams that can pass {{ lock_status.team_key }}</td>
+                <td class="col-points" align="right">{{ lock_status.total_teams_that_can_pass }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td class="col-description">Points needed by teams below to pass {{ lock_status.team_key }}</td>
+                <td class="col-points" align="right">{{ lock_status.total_points_to_pass }}</td>
+            </tr>
+            <tr>
+                <td class="col-description">Points remaining in the district</td>
+                <td class="col-points" align="right">{{ lock_status.total_points_remaining }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <td class="col-description">% of Lock Achieved (Points to pass/points remaining)</td>
+                <td class="col-points" align="right">{{ lock_status.lock_status }}</td>
+            </tr>
+        </table>
+
+        <h2>Points to Pass</h2>
+        <table class="points-to-tie-table">
+            <tr class="points-to-tie-header">
+                <th>Team</th>
+                <th>Rank</th>
+                <th>Pts</th>
+                <th>Max Pts</th>
+                <th>Pts to Tie</th>
+            </tr>
+            {% for following_team in following_teams %}
+            <tr style="background-color: #{{ following_team.color }}">
+                <td class="col-team" align="center"><b><a href="https://www.thebluealliance.com/team/{{ following_team.following_team_number }}" target="_blank">{{ following_team.following_team_key }}</a></b></td>
+                <td class="col-rank" align="right">{{ following_team.following_team_rank }}</td>
+                <td class="col-points" align="right">{{ following_team.points_total }}</td>
+                <td class="col-points" align="right">{{ following_team.max_points }}</td>
+                <td class="col-points" align="right">{{ following_team.points_to_pass }}</td>
+            </tr>
+            {% endfor %}
+
+        <tr style="background-color: #FFD966">
+            <td>
+                <b># Teams:</b>
+            </td>
+            <td align="right">
+                <b>{{ lock_status.total_teams_that_can_pass }}</b>
+            </td>
+            <td colspan="2">
+                <b>Total Pts Needed:</b>
+            </td>
+            <td align="right">
+                <b>{{ lock_status.total_points_to_pass }}</b>
+            </td>
+        </tr>
+        </table>
+
+        {% include 'includes/footer.html' %}
+    </div>
+</body>
+</html>

@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS event_points_remaining AS (
         CASE WHEN event_state != 'Completed' THEN
             60 * 3 -- don't include impact, engineering inspiration, or rookie all star awards
             - COALESCE(awarded_award_points.awarded_award_points, 0)
-        ELSE 0 END * 3 AS award_points_remaining,
+        ELSE 0 END AS award_points_remaining,
         CASE WHEN event_states.event_state = 'Finals' THEN 31 -- 30 points for match winner, 1 for possible rounding if there's backup team for finalist
             WHEN event_states.event_state = 'Elims 13' THEN 31 + 22 -- 21 points for match winner, 1 for possible rounding if there's backup team for 3rd place
             WHEN event_states.event_state = 'Elims 12' THEN 31 + 22 + 19 -- 18 points for match winner, 1 for possible rounding if there's backup team for 4th place

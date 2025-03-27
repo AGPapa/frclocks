@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS adjusted_district_rankings AS (
         SELECT
             event_teams.team_key,
             event_states.district_key,
-            SUM(event_points.points) AS points,
+            SUM(CASE WHEN event_states.event_state NOT IN ('Pre-Event', 'Qualifications') THEN event_points.points ELSE 0 END) AS points,
             SUM(CASE WHEN event_states.event_state NOT IN ('Completed') THEN 1 ELSE 0 END) AS events_remaining,
             SUM(CASE WHEN event_states.event_state IN ('Pre-Event', 'Qualifications') THEN 1 ELSE 0 END) AS quals_remaining,
             SUM(CASE WHEN event_states.event_state IN ('Pre-Event', 'Qualifications', 'Selections') THEN 1 ELSE 0 END) AS selections_remaining,

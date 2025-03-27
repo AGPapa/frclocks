@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS team_event_states AS (
         UNION ALL SELECT event_key, backup_key AS team_key FROM eliminated_alliances WHERE backup_key IS NOT NULL
     )
     SELECT
+        event_states.district_key,
         event_states.event_key,
         event_points.team_key,
         event_points.award_points = 0 AS award_eligible,   -- If a team already earned an award, then they can't win another

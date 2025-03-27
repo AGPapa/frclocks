@@ -50,7 +50,7 @@ def lambda_handler(event, context):
 
 # Keep the main() function for local testing
 def main():
-    test_event = {'district_key': '2025fit'}
+    test_event = {'district_key': '2025isr', 'mode': 'dcmp'}
     print(lambda_handler(test_event, None))
 
 if __name__ == "__main__":

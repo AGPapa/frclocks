@@ -302,7 +302,7 @@ def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
             total_points_to_pass,
             total_points_remaining,
             lock_status
-        FROM lock_status
+        FROM lock_status_v2
         WHERE team_key = '{team_key}'
     """, con)[0]
 
@@ -315,7 +315,7 @@ def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
             following_team_max_possible_points AS max_points,
             COALESCE(CAST(following_team_points_needed_to_pass AS VARCHAR), '-') AS points_to_pass,
             following_team_color AS color
-        FROM following_teams
+        FROM following_teams_v2
         WHERE team_key = '{team_key}'
         ORDER BY following_team_rank ASC
     """, con)
@@ -344,7 +344,7 @@ def generate_dcmp_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
             total_points_to_pass,
             total_points_remaining,
             lock_status
-        FROM lock_status
+        FROM lock_status_v2
         WHERE team_key = '{team_key}'
     """, con)[0]
 
@@ -357,7 +357,7 @@ def generate_dcmp_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
             following_team_max_possible_points AS max_points,
             COALESCE(CAST(following_team_points_needed_to_pass AS VARCHAR), '-') AS points_to_pass,
             following_team_color AS color
-        FROM following_teams
+        FROM following_teams_v2
         WHERE team_key = '{team_key}'
         ORDER BY following_team_rank ASC
     """, con)
@@ -370,7 +370,7 @@ def generate_dcmp_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
     }
 
     # Only generate team pages if needed
-    if lock_status['lock_status'] not in ['-', '0%', 'Impact', 'EI', 'RAS','Prequalified']:
+    if lock_status['lock_status'] not in ['-', '0%', 'Impact', 'EI', 'RAS', 'Prequalified', 'Winner']:
         html_content = template.render(**context)
         write_file(html_content, f"teams/{team_key}.html")
 

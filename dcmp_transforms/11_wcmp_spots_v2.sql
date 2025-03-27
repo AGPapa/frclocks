@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS wcmp_spots_v2 AS (
         FROM team_event_states
         JOIN alliances ON team_event_states.event_key = alliances.event_key
             AND team_event_states.team_key IN (alliances.captain_key, alliances.first_selection_key, alliances.second_selection_key, alliances.backup_key)
-        WHERE team_event_states.elim_eligible = TRUE
+        JOIN event_states ON team_event_states.event_key = event_states.event_key
+        WHERE team_event_states.elim_eligible = TRUE AND event_states.event_state NOT IN ('Pre-Event', 'Qualifications', 'Selections', 'Awards', 'Completed')
     ),
     locked_teams_per_alliance AS (
         SELECT

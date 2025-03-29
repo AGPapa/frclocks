@@ -302,7 +302,7 @@ def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
             total_points_to_pass,
             total_points_remaining,
             lock_status
-        FROM lock_status_v2
+        FROM lock_status
         WHERE team_key = '{team_key}'
     """, con)[0]
 
@@ -315,7 +315,7 @@ def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
             following_team_max_possible_points AS max_points,
             COALESCE(CAST(following_team_points_needed_to_pass AS VARCHAR), '-') AS points_to_pass,
             following_team_color AS color
-        FROM following_teams_v2
+        FROM following_teams
         WHERE team_key = '{team_key}'
         ORDER BY following_team_rank ASC
     """, con)

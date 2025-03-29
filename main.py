@@ -6,6 +6,7 @@ from collect_data import collect_data
 from run_transformations import run_transformations
 from load_lookup_tables import load_lookup_tables
 from generate_html import generate_html
+from validate_points import validate_events
 
 def lambda_handler(event, context):
     try:
@@ -30,9 +31,20 @@ def lambda_handler(event, context):
         run_transformations_time = time.time()
         print(f"Time to run transformations: {run_transformations_time - collect_data_time:.2f} seconds")
 
-        generate_html(district_key, con, mode)
-        generate_html_time = time.time()
-        print(f"Time to generate HTML: {generate_html_time - run_transformations_time:.2f} seconds")
+
+        is_valid = validate_events(con, mode)
+        validate_events_time = time.time()
+        print(f"Time to validate events: {validate_events_time - run_transformations_time:.2f} seconds")
+
+        if is_valid:
+            generate_html(district_key, con, mode)
+            generate_html_time = time.time()
+            print(f"Time to generate HTML: {generate_html_time - validate_events_time:.2f} seconds")
+        else:
+            return {
+                'statusCode': 500,
+                'body': 'Points are invalid. See logs for details.'
+            }
 
         # Clean up
         con.close()

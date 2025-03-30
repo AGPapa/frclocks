@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS adjusted_district_rankings AS (
             SUM(CASE WHEN event_states.event_state NOT IN ('Completed') AND COALESCE(team_event_states.award_eligible, TRUE) THEN 1 ELSE 0 END) AS awards_remaining
         FROM events_that_count
         JOIN event_states ON events_that_count.event_key = event_states.event_key
-        LEFT JOIN team_event_states ON events_that_count.event_key = event_states.event_key
+        LEFT JOIN team_event_states ON team_event_states.event_key = event_states.event_key
                             AND team_event_states.team_key = events_that_count.team_key
         WHERE event_states.event_state != 'Completed'
         AND event_states.event_type = 'District'

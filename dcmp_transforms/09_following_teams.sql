@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS following_teams AS (
             finals_remaining,
             awards_remaining,
             points
-                + 18 * quals_remaining * 3
+                + 22 * quals_remaining * 3 -- 22 points for quals top rank, since we don't inflate quals points
                 + 16 * selections_remaining * 3
                 + 20 * double_elims_remaining * 3
                 + 0 * finals_remaining * 3 -- 0 points for event winner since they auto qualify

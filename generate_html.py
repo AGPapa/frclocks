@@ -177,7 +177,7 @@ def generate_dcmp_page(district_key: str, con: duckdb.DuckDBPyConnection):
             total_points,
             lock_status,
             color
-        FROM lock_status
+        FROM lock_status_v2
         WHERE district_key = '{district_key}'
         ORDER BY rank
     """, con)

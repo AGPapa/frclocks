@@ -12,6 +12,7 @@ mkdir deployment/static/images
 cp *.py ./deployment/
 cp transforms/*.sql ./deployment/transforms/
 cp dcmp_transforms/*.sql ./deployment/dcmp_transforms/
+cp dcmp_divisions_transforms/*.sql ./deployment/dcmp_divisions_transforms/
 cp lookups/*.csv ./deployment/lookups/
 cp html_templates/*.html ./deployment/html_templates/
 cp html_templates/includes/*.html ./deployment/html_templates/includes/

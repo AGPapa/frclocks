@@ -5,6 +5,8 @@ import os
 def run_transformations(con: duckdb.DuckDBPyConnection, mode: str):
     if mode == 'dcmp':
         transforms_folder = 'dcmp_transforms'
+    elif mode == 'dcmp_divisions':
+        transforms_folder = 'dcmp_divisions_transforms'
     else:
         transforms_folder = 'transforms'
 

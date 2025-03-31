@@ -31,7 +31,6 @@ def lambda_handler(event, context):
         run_transformations_time = time.time()
         print(f"Time to run transformations: {run_transformations_time - collect_data_time:.2f} seconds")
 
-
         is_valid = validate_events(con, mode)
         validate_events_time = time.time()
         print(f"Time to validate events: {validate_events_time - run_transformations_time:.2f} seconds")

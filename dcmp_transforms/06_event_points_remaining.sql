@@ -24,6 +24,9 @@ CREATE TABLE IF NOT EXISTS event_points_remaining AS (
     )
     SELECT
         events.event_key,
+        district_lookup.display_name || ' ' || district_lookup.dcmp_name AS name,
+        event_states.event_state,
+        event_states.color,
         event_teams_count.team_count,
         CASE WHEN event_state != 'Completed' THEN
             60 * 3 -- don't include impact, engineering inspiration, or rookie all star awards
@@ -46,5 +49,6 @@ CREATE TABLE IF NOT EXISTS event_points_remaining AS (
     JOIN event_states ON events.event_key = event_states.event_key
     JOIN event_teams_count ON events.event_key = event_teams_count.event_key
     JOIN qual_points ON event_teams_count.team_count = qual_points.event_size
+    JOIN district_lookup ON events.district_key = district_lookup.district_key
     LEFT JOIN awarded_award_points ON events.event_key = awarded_award_points.event_key
 )

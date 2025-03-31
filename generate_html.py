@@ -261,16 +261,9 @@ def generate_dcmp_event_page(event_key: str, con: duckdb.DuckDBPyConnection):
     # Get event data
     event = duckdb_result_to_dict(f"""
         SELECT
-            event_states.name,
-            event_states.event_state AS status,
-            event_states.color
-        FROM event_states
-        WHERE event_states.event_key = '{event_key}'
-    """, con)[0]
-
-    # Get points remaining data
-    points_remaining = duckdb_result_to_dict(f"""
-        SELECT
+            name,
+            event_state AS status,
+            color,
             quals_points_remaining,
             alliance_selection_points_remaining,
             elimination_points_remaining,
@@ -282,7 +275,6 @@ def generate_dcmp_event_page(event_key: str, con: duckdb.DuckDBPyConnection):
 
     context = {
         'event': event,
-        'points_remaining': points_remaining,
         'env': ENV,
         'ga_tracking_id': GA_TRACKING_ID
     }

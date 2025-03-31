@@ -91,7 +91,7 @@ def save_alliances(event_key: str, con: duckdb.DuckDBPyConnection, fetch_data: b
                     alliance["picks"][0],
                     alliance["picks"][1],
                     alliance["picks"][2],
-                    alliance["backup"]["in"] if "backup" in alliance else None
+                    alliance["picks"][3] if len(alliance["picks"]) > 3 else None
                 )
             )
 

@@ -9,10 +9,12 @@ CREATE TABLE IF NOT EXISTS wcmp_spots_v2 AS (
             alliances.second_selection_key,
             alliances.backup_key
         FROM team_event_states
+        JOIN events ON team_event_states.district_key = events.district_key
         JOIN dcmp_finals_state ON team_event_states.district_key = dcmp_finals_state.district_key
-        JOIN alliances ON dcmp_finals_state.event_key = alliances.event_key
+        JOIN alliances ON events.event_key = alliances.event_key
             AND team_event_states.team_key IN (alliances.captain_key, alliances.first_selection_key, alliances.second_selection_key, alliances.backup_key)
-        WHERE team_event_states.elim_eligible = TRUE AND dcmp_finals_state.event_state NOT IN ('Pre-Event', 'Awards', 'Completed')
+        WHERE team_event_states.elim_eligible = TRUE AND dcmp_finals_state.event_state NOT IN ('Awards', 'Completed')
+            AND events.event_type = 'District Championship Division'
     ),
     locked_teams_per_alliance AS (
         SELECT

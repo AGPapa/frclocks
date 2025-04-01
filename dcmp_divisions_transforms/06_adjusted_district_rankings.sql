@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS adjusted_district_rankings AS (
             event_states.district_key,
             event_states.event_key,
             SUM(CASE WHEN event_states.event_state NOT IN ('Pre-Event', 'Qualifications') THEN event_points.points ELSE 0 END) AS points,
-            SUM(CASE WHEN event_states.event_state NOT IN ('Completed') THEN 1 ELSE 0 END) AS events_remaining,
+            SUM(CASE WHEN dcmp_finals_state.event_state NOT IN ('Completed') THEN 1 ELSE 0 END) AS events_remaining,
             SUM(CASE WHEN event_states.event_state IN ('Pre-Event', 'Qualifications') THEN 1 ELSE 0 END) AS quals_remaining,
             SUM(CASE WHEN event_states.event_state IN ('Pre-Event', 'Qualifications', 'Selections') THEN 1 ELSE 0 END) AS selections_remaining,
             SUM(CASE WHEN event_states.event_state NOT IN ('Finals', 'Awards', 'Completed')  AND COALESCE(team_event_states.elim_eligible, TRUE) THEN 1 ELSE 0 END) AS double_elims_remaining,

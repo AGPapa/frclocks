@@ -2,7 +2,9 @@ CREATE TABLE IF NOT EXISTS team_event_states AS (
     WITH eliminated_alliances AS (
         SELECT
             events.district_key,
+            events.event_key,
             alliances.alliance_name AS eliminated_alliance_name,
+            matches.comp_level,
             ANY_VALUE(alliances.captain_key) AS captain_key,
             ANY_VALUE(alliances.first_selection_key) AS first_selection_key,
             ANY_VALUE(alliances.second_selection_key) AS second_selection_key,
@@ -32,10 +34,10 @@ CREATE TABLE IF NOT EXISTS team_event_states AS (
                     )
                 )
             )
-        WHERE matches.comp_level = 'sf'
+        WHERE matches.comp_level IN ('sf', 'f')
         AND winning_alliance IN ('red', 'blue')
-        AND event_states.event_state NOT IN ('Pre-Event', 'Qualifications', 'Selections', 'Awards', 'Completed')
-        GROUP BY events.district_key, alliances.alliance_name
+        AND event_states.event_state NOT IN ('Pre-Event', 'Qualifications', 'Selections')
+        GROUP BY events.district_key, events.event_key, alliances.alliance_name, matches.comp_level
         HAVING COUNT(DISTINCT matches.match_key) >= 2
     ),
     eliminated_dcmp_finals_alliances AS (

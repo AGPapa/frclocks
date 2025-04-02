@@ -27,8 +27,8 @@ def validate_event_points(con: duckdb.DuckDBPyConnection, event_key: str, mode: 
             return False
 
 
-    elim_points = [('Elims 8', 39), ('Elims 9', 78), ('Elims 10', 99), ('Elims 11', 120), ('Elims 12', 141), ('Elims 13', 159), ('Finals', 180)]
-    multiplier = 3 if mode == 'dcmp' else 1
+    elim_points = [('Elims 8', 39), ('Elims 9', 78), ('Elims 10', 99), ('Elims 11', 120), ('Elims 12', 141), ('Elims 13', 159), ('Finals', 180), ('Awards', 210)]
+    multiplier = 3 if mode in ['dcmp', 'dcmp_divisions'] else 1
     for state, points in elim_points:
         if event_state[0]['event_state'] == state:
             elim_points = duckdb_result_to_dict(f"SELECT SUM(elim_points) AS sum FROM event_points WHERE event_key = '{event_key}'", con)

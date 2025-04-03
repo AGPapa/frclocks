@@ -3,6 +3,7 @@ rm -rf deployment
 mkdir deployment
 mkdir deployment/transforms
 mkdir deployment/dcmp_transforms
+mkdir deployment/dcmp_divisions_transforms
 mkdir deployment/lookups
 mkdir deployment/html_templates
 mkdir deployment/html_templates/includes

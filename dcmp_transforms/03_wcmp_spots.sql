@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS wcmp_spots AS (
             - district_lookup.dcmp_impact_awards
             - district_lookup.dcmp_ei_awards
             - district_lookup.dcmp_ras_awards
-            - COALESCE(bonus_point_spots.num_dcmp_winners, 4) -- Assume there will be a backup team on the winning alliance unless we know otherwise
+            - COALESCE(bonus_point_spots.num_dcmp_winners, CASE WHEN district_lookup.district_key = '2025fsc' THEN 2 ELSE 4 END) -- Assume there will be a backup team on the winning alliance unless we know otherwise. South Carolina only sends 2 winners
             + COALESCE(bonus_point_spots.num_double_qualifying_awards, 0) -- If a winner also gets a qualifying award, then an extra point spot is available
             + 2 * COALESCE(bonus_point_spots.num_triple_qualifying_awards, 0) -- If a prequalified also gets two qualifying awards, then an two extra point spots are available
             + COALESCE(bonus_point_spots.num_missing_qualifying_awards, 0) -- If RAS was not awarded, then an extra point spot is available

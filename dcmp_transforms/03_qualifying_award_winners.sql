@@ -42,8 +42,8 @@ CREATE TABLE IF NOT EXISTS qualifying_award_winners AS (
     winning_teams AS (
         SELECT district_key, captain_key AS team_key FROM winners
         UNION ALL SELECT district_key, first_selection_key AS team_key FROM winners
-        UNION ALL SELECT district_key, second_selection_key AS team_key FROM winners
-        UNION ALL SELECT district_key, backup_key AS team_key FROM winners WHERE backup_key IS NOT NULL
+        UNION ALL SELECT district_key, second_selection_key AS team_key FROM winners WHERE district_key != '2025fsc' -- South Carolina doesn't send second selection
+        UNION ALL SELECT district_key, backup_key AS team_key FROM winners WHERE backup_key IS NOT NULL AND district_key != '2025fsc' -- South Carolina doesn't send backup
     ),
     award_teams AS (
         SELECT
@@ -55,8 +55,12 @@ CREATE TABLE IF NOT EXISTS qualifying_award_winners AS (
             END AS award_type
         FROM awards
         JOIN events ON awards.event_key = events.event_key
-        WHERE award_type IN (0, 9, 10)
-        AND events.event_type = 'District Championship'
+        WHERE 
+            (
+                (events.district_key != '2025fsc' AND award_type IN (0, 9, 10))
+                OR (events.district_key = '2025fsc' AND award_type IN (0, 9)) -- South Carolina doesn't send RAS winner
+            )
+            AND events.event_type = 'District Championship'
     )
     SELECT
         COALESCE(winning_teams.district_key, award_teams.district_key, prequalified_teams.district_key) AS district_key,

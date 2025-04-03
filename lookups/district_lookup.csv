@@ -14,5 +14,5 @@ district_key,display_name,dcmp_name,dcmp_capacity,wcmp_capacity,dcmp_impact_awar
 2025ont,Ontario,Provincial Championship,100,22,2,1,1
 2025pnw,Pacific Northwest,District Championship,50,22,2,2,1
 2025pch,Peachtree,State Championship,45,12,1,2,1
-2025fsc,South Carolina,State Championship,28,5,1,1,1
+2025fsc,South Carolina,State Championship,28,5,1,1,0
 2025fit,Texas,State Championship,90,28,2,2,2

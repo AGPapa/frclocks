@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS event_points_remaining AS (
         CASE WHEN dcmp_finals_state.num_dcmp_divisions = 4 AND dcmp_finals_state.event_state NOT IN ('Finals', 'Awards', 'Completed') THEN 30 ELSE 0 END * 3 AS elimination_points_remaining,
         0 AS alliance_selection_points_remaining,
         0 AS quals_points_remaining,
-        0 AS points_remaining
+         CASE WHEN dcmp_finals_state.num_dcmp_divisions = 4 AND dcmp_finals_state.event_state NOT IN ('Finals', 'Awards', 'Completed') THEN 30 ELSE 0 END * 3 AS points_remaining
     FROM events
     JOIN dcmp_finals_state ON events.event_key = dcmp_finals_state.event_key
     LEFT JOIN event_teams_count ON events.event_key = event_teams_count.event_key

@@ -45,8 +45,8 @@ CREATE TABLE IF NOT EXISTS following_teams AS (
             ELSE NULL END AS following_team_points_needed_to_pass,
             CASE WHEN following_team_can_pass THEN CAST(teams_to_pass.inflated_points - teams_with_remaining_events.inflated_points AS VARCHAR)
             ELSE '-' END AS following_team_points_needed_to_pass_status,
-            CASE WHEN following_team_can_pass THEN 'FFD966'
-            ELSE 'E06666' END AS following_team_color
+            CASE WHEN following_team_can_pass THEN 'fefce8'
+            ELSE 'FEF3F2' END AS following_team_color
         FROM teams_to_pass
         LEFT JOIN teams_with_remaining_events ON
                 teams_to_pass.team_key != teams_with_remaining_events.team_key

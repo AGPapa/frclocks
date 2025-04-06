@@ -7,6 +7,8 @@
         
         <h2>{{ event.name }}</h2>
         <h3>Points Remaining</h3>
+        <div class="table-flex">
+         <div class="table-container">
         <table class="points-remaining-table">
             <tr class="points-remaining-header">
                 <th>Description</th>
@@ -32,7 +34,7 @@
                 <td class="col-description"><b>Total Points Remaining</b></td>
                 <td class="col-points" align="right"><b>{{ points_remaining.points_remaining }}</b></td>
             </tr>
-        </table>
+        </table></div></div>
 
         {% include 'includes/footer.html' %}
     </div>

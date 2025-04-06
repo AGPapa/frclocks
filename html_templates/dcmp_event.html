@@ -1,40 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-    {% include 'includes/header.html' %}
-<body>
+  {% include 'includes/header.html' %}
+  <body>
     <div class="container">
-        {% include 'includes/nav.html' %}
-        
-        <h2>{{ event.name }}</h2>
-        <h3>Points Remaining</h3>
-        <table class="points-remaining-table">
-            <tr class="points-remaining-header">
-                <th>Description</th>
-                <th style="width: 60px;">Points</th>
-            </tr>
-            <tr>
-                <td class="col-description">Qualification Points</td>
-                <td class="col-points" align="right">{{ event.quals_points_remaining }}</td>
-            </tr>
-            <tr>
-                <td class="col-description">Alliance Selection Points</td>
-                <td class="col-points" align="right">{{ event.alliance_selection_points_remaining }}</td>
-            </tr>
-            <tr>
-                <td class="col-description">Elimination Points</td>
-                <td class="col-points" align="right">{{ event.elimination_points_remaining }}</td>
-            </tr>
-            <tr>
-                <td class="col-description">Award points (Not including Impact, EI, or RAS)</td>
-                <td class="col-points" align="right">{{ event.award_points_remaining }}</td>
-            </tr>
-            <tr>
-                <td class="col-description"><b>Total Points Remaining</b></td>
-                <td class="col-points" align="right"><b>{{ event.points_remaining }}</b></td>
-            </tr>
-        </table>
+      {% include 'includes/nav.html' %}
 
-        {% include 'includes/footer.html' %}
+      <h2>{{ event.name }}</h2>
+      <h3>Points Remaining</h3>
+      <div class="table-flex">
+        <div class="table-container">
+          <table class="points-remaining-table">
+            <tr class="points-remaining-header">
+              <th>Description</th>
+              <th style="width: 60px">Points</th>
+            </tr>
+            <tr>
+              <td class="col-description">Qualification Points</td>
+              <td class="col-points" align="right">
+                {{ event.quals_points_remaining }}
+              </td>
+            </tr>
+            <tr>
+              <td class="col-description">Alliance Selection Points</td>
+              <td class="col-points" align="right">
+                {{ event.alliance_selection_points_remaining }}
+              </td>
+            </tr>
+            <tr>
+              <td class="col-description">Elimination Points</td>
+              <td class="col-points" align="right">
+                {{ event.elimination_points_remaining }}
+              </td>
+            </tr>
+            <tr>
+              <td class="col-description">
+                Award points (Not including Impact, EI, or RAS)
+              </td>
+              <td class="col-points" align="right">
+                {{ event.award_points_remaining }}
+              </td>
+            </tr>
+            <tr>
+              <td class="col-description"><b>Total Points Remaining</b></td>
+              <td class="col-points" align="right">
+                <b>{{ event.points_remaining }}</b>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      {% include 'includes/footer.html' %}
     </div>
-</body>
+  </body>
 </html>

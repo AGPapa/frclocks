@@ -43,11 +43,11 @@ CREATE TABLE IF NOT EXISTS lock_status AS (
         ELSE COALESCE(LEAST(ROUND(SUM(following_teams.following_team_points_needed_to_pass) * 100.0 / ANY_VALUE(district_points_remaining.points_remaining), 1), 99.9), 0.0) || '%'
         END AS lock_status,
         CASE
-        WHEN lock_status = '100%' THEN '6AA84F'
-        WHEN lock_status = '-' THEN 'E06666'
-        WHEN lock_status = 'Impact' THEN '6D9EEB'
-        WHEN ANY_VALUE(following_teams.following_team_key) IS NOT NULL THEN 'B6D7A8'
-        ELSE 'FFD966'
+        WHEN lock_status = '100%' THEN 'DCFCE7'
+        WHEN lock_status = '-' THEN 'FEF3F2'
+        WHEN lock_status = 'Impact' THEN 'CEFAFE'
+        WHEN ANY_VALUE(following_teams.following_team_key) IS NOT NULL THEN 'EFFDF4'
+        ELSE 'fefce8'
         END AS color
     FROM adjusted_district_rankings
     JOIN district_points_remaining ON adjusted_district_rankings.district_key = district_points_remaining.district_key

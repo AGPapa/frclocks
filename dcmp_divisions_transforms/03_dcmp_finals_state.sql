@@ -30,8 +30,8 @@ CREATE TABLE IF NOT EXISTS dcmp_finals_state AS (
             WHEN COALESCE(ANY_VALUE(event_awards.impact_count), 0) >= ANY_VALUE(district_lookup.dcmp_impact_awards) THEN 'Completed'
             ELSE 'ERROR'
         END AS event_state,
-        CASE WHEN event_state = 'Completed' THEN '93C47D'
-        ELSE 'FFD966'
+        CASE WHEN event_state = 'Completed' THEN 'ECFDF5'
+        ELSE 'fefce8'
         END AS color
     FROM events
     JOIN district_lookup ON events.district_key = district_lookup.district_key

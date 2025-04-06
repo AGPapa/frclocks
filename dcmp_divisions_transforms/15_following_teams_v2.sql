@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS following_teams_v2 AS (
                 + 20 * double_elims_remaining * 3
                 + 10 * finals_remaining * 3
                 + 5 * awards_remaining * 3 -- only 5 points per award, since EI and RAS auto-qualify
+                + 10 * dcmp_semi_finals_remaining * 3
             AS max_possible_points
         FROM district_rankings_without_qualify_awards
         WHERE events_remaining > 0

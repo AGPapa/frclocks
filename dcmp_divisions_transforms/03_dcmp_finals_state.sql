@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS dcmp_finals_state AS (
         ANY_VALUE(num_dcmp_divisions.num_dcmp_divisions) AS num_dcmp_divisions,
         CASE
             WHEN COALESCE(COUNT(DISTINCT matches.match_key), 0) = 0 THEN 'Pre-Event'
+            WHEN SUM(CASE WHEN matches.comp_level IN ('sf', 'f') AND matches.winning_alliance IN ('red', 'blue') THEN 1 ELSE 0 END) = 0 THEN 'Elims 1'
             WHEN SUM(CASE WHEN matches.comp_level = 'sf' AND matches.winning_alliance IN ('red', 'blue') THEN 1 ELSE 0 END) BETWEEN 1 AND 4 THEN 'Elims ' || (SUM(CASE WHEN matches.comp_level = 'sf' AND matches.winning_alliance IN ('red', 'blue') THEN 1 ELSE 0 END) + 1)
             WHEN SUM(CASE WHEN matches.comp_level = 'f' AND matches.winning_alliance = 'red' THEN 1 ELSE 0 END) < 2 AND SUM(CASE WHEN matches.comp_level = 'f' AND matches.winning_alliance = 'blue' THEN 1 ELSE 0 END) < 2 THEN 'Finals'
             WHEN COALESCE(ANY_VALUE(event_awards.impact_count), 0) < ANY_VALUE(district_lookup.dcmp_impact_awards) THEN 'Awards'

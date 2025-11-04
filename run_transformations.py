@@ -4,11 +4,11 @@ import os
 
 def run_transformations(con: duckdb.DuckDBPyConnection, mode: str):
     if mode == 'dcmp':
-        transforms_folder = 'dcmp_transforms'
+        transforms_folder = 'transforms/dcmp'
     elif mode == 'dcmp_divisions':
-        transforms_folder = 'dcmp_divisions_transforms'
+        transforms_folder = 'transforms/dcmp_divisions'
     else:
-        transforms_folder = 'transforms'
+        transforms_folder = 'transforms/district'
 
     sql_files = sorted([f for f in os.listdir(transforms_folder) if f.endswith('.sql')])
 

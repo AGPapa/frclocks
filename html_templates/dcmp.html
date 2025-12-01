@@ -5,6 +5,9 @@
     <div class="container">
         {% include 'includes/nav.html' %}
         <h2>{{ district_stats.display_name }} District</h2>
+        <div class="table-flex">
+
+        <div class="table-container">
         <table class="stats-table">
             <tr class="stats-table-header">
                 <th style="width: 270px;">Statistic</th>
@@ -19,8 +22,12 @@
                 <td class="col-value">{{ district_stats.wcmp_capacity }}</td>
             </tr>
         </table>
+        </div></div>
 
         <h2>Events</h2>
+        <div class="table-flex">
+
+        <div class="table-container">
         <table class="events-table">
             <tr class="event-table-header">
                 <th style="width: 250px;">Event</th>
@@ -29,7 +36,7 @@
                 <th style="width: 125px;">Pts Available</th>
             </tr>
             {% for event in events %}
-            <tr style="background-color: #{{ event.color }}">
+            <tr style="--bg-color: #{{ event.color }}">
                 <td class="col-event"><a href="https://www.thebluealliance.com/event/{{ event.key }}">{{ event.name }}</a></td>
                 <td class="col-status">{{ event.status }}</td>
                 <td class="col-teams">{{ event.team_count }}</td>
@@ -37,11 +44,15 @@
             </tr>
             {% endfor %}
         </table>
+        </div></div> 
 
         <h2>District Rankings</h2>
-        <img src="{% if env == 'DEV' %}../../static/images/dcmp_key.png{% else %}/images/dcmp_key.png{% endif %}" alt="key"/>
+        {% include 'includes/dcmp_legend.html' %}
         <br/>
         <br/>
+        <div class="table-flex">
+
+        <div class="table-container">
         <table class="rankings-table">
             <tr class="rankings-table-header">
                 <th style="width: 60px;">Rank</th>
@@ -53,9 +64,9 @@
                 <th style="width: 100px;">Locked?</th>
             </tr>
             {% for team in rankings %}
-            <tr style="background-color: #{{ team.color }}">
+            <tr style="--bg-color: #{{ team.color }}">
                 <td class="col-rank">{{ team.rank }}</td>
-                <td class="col-team"><a href="https://www.thebluealliance.com/team/{{ team.team_number }}"><b>{{ team.team_key }}</b></a></td>
+                <td class="col-team"><a href="https://www.thebluealliance.com/team/{{ team.team_number }}"><b>{{ team.team_number }}</b></a></td>
                 <td class="col-event1">{{ team.district_event_points or 0 }}</td>
                 <td class="col-age-bonus">{{ team.rookie_bonus }}</td>
                 <td class="col-event2">{{ team.dcmp_points or 0 }}</td>
@@ -68,7 +79,7 @@
             </tr>
             {% endfor %}
         </table>
-        
+        </div></div>
         {% include 'includes/footer.html' %}
     </div>
 </body>

@@ -61,7 +61,7 @@ def lambda_handler(event, context):
 
 # Keep the main() function for local testing
 def main():
-    test_event = {'district_key': '2026win', 'mode': 'district'}
+    test_event = {'district_key': '2026ca', 'mode': 'district_california'}
     print(lambda_handler(test_event, None))
 
 if __name__ == "__main__":

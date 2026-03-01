@@ -45,8 +45,18 @@ def load_prequalified_teams(con: duckdb.DuckDBPyConnection):
         FROM read_csv_auto('lookups/prequalified_teams.csv')
     """)
 
+def load_california_team_lookup_table(con: duckdb.DuckDBPyConnection):
+    con.execute("""
+        CREATE TABLE IF NOT EXISTS california_team_lookup AS
+        SELECT
+            team_key,
+            region
+        FROM read_csv_auto('lookups/california_team_lookup.csv')
+    """)
+
 def load_lookup_tables(con: duckdb.DuckDBPyConnection):
     load_qual_lookup_table(con)
     load_district_lookup_table(con)
     load_points_adjustments(con)
     load_prequalified_teams(con)
+    load_california_team_lookup_table(con)

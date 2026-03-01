@@ -74,7 +74,7 @@ def write_static_files(mode: str):
                 ContentType='image/x-icon'
             )
 
-        if mode == "district":
+        if mode in ("district", "district_california"):
             with open("static/images/district_key.png", "rb") as file:
                 image_content = file.read()
             s3.put_object(
@@ -161,6 +161,67 @@ def generate_district_page(district_key: str, con: duckdb.DuckDBPyConnection):
 
     html_content = template.render(**context)
     write_file(html_content, f"districts/{district_key[4:]}.html")
+
+def generate_district_california_page(district_key: str, region: str, con: duckdb.DuckDBPyConnection):
+    env = Environment(loader=FileSystemLoader('html_templates'))
+    template = env.get_template('district_california.html')
+
+    rankings = duckdb_result_to_dict(f"""
+        SELECT
+            rank,
+            SUBSTRING(team_key, 4) AS team_number,
+            team_key,
+            event1_points,
+            event2_points,
+            rookie_bonus,
+            total_points,
+            lock_status,
+            color
+        FROM lock_status
+        WHERE district_key = '{district_key}'
+        AND region = '{region}'
+        ORDER BY rank
+    """, con)
+
+    events = duckdb_result_to_dict(f"""
+        SELECT
+            event_states.event_key AS key,
+            event_states.name,
+            event_states.event_state AS status,
+            event_points_remaining.team_count,
+            event_points_remaining.points_remaining,
+            event_states.color
+        FROM event_states
+        JOIN event_regions ON event_states.event_key = event_regions.event_key AND event_states.district_key = event_regions.district_key
+        JOIN event_points_remaining ON event_regions.event_key = event_points_remaining.event_key AND event_regions.region = event_points_remaining.region
+        WHERE event_states.district_key = '{district_key}'
+        AND event_regions.region = '{region}'
+        ORDER BY event_states.start_date, event_states.name
+    """, con)
+
+    stats = duckdb_result_to_dict(f"""
+        SELECT
+            district_points_remaining.points_remaining,
+            district_lookup.dcmp_capacity,
+            district_lookup.display_name
+        FROM district_points_remaining
+        JOIN district_lookup ON district_points_remaining.district_key = district_lookup.district_key
+        WHERE district_points_remaining.district_key = '{district_key}'
+        AND district_points_remaining.region = '{region}'
+    """, con)[0]
+
+    context = {
+        'rankings': rankings,
+        'events': events,
+        'district_stats': stats,
+        'region': region,
+        'env': ENV,
+        'ga_tracking_id': GA_TRACKING_ID
+    }
+
+    html_content = template.render(**context)
+    write_file(html_content, f"districts/{district_key[4:]}_{region}.html")
+
 
 def generate_dcmp_page(district_key: str, con: duckdb.DuckDBPyConnection):
     env = Environment(loader=FileSystemLoader('html_templates'))
@@ -450,6 +511,19 @@ def generate_html(district_key: str, con: duckdb.DuckDBPyConnection, mode: str):
         teams = duckdb_result_to_dict(f"SELECT team_key FROM district_rankings WHERE district_key = '{district_key}'", con)
         for team in teams:
             generate_team_page(team['team_key'], con)
+
+    elif mode == "district_california":
+        generate_district_california_page(district_key, 'north', con)
+        generate_district_california_page(district_key, 'south', con)
+
+        events = duckdb_result_to_dict(f"SELECT event_key FROM events WHERE district_key = '{district_key}' and event_type = 'District'", con)
+        for event in events:
+            generate_event_page(event['event_key'], con)
+
+        teams = duckdb_result_to_dict(f"SELECT team_key FROM district_rankings WHERE district_key = '{district_key}'", con)
+        for team in teams:
+            generate_team_page(team['team_key'], con)
+
     elif mode == "dcmp":
         generate_dcmp_page(district_key, con)
 

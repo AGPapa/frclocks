@@ -164,7 +164,7 @@ def generate_district_page(district_key: str, con: duckdb.DuckDBPyConnection):
 
 def generate_district_california_page(district_key: str, region: str, con: duckdb.DuckDBPyConnection):
     env = Environment(loader=FileSystemLoader('html_templates'))
-    template = env.get_template('district_california.html')
+    template = env.get_template('district.html')
 
     rankings = duckdb_result_to_dict(f"""
         SELECT
@@ -314,6 +314,42 @@ def generate_event_page(event_key: str, con: duckdb.DuckDBPyConnection):
 
     html_content = template.render(**context)
     write_file(html_content, f"events/{event_key}.html")
+
+def generate_event_california_page(event_key: str, region: str, con: duckdb.DuckDBPyConnection):
+    env = Environment(loader=FileSystemLoader('html_templates'))
+    template = env.get_template('event.html')
+
+    event = duckdb_result_to_dict(f"""
+        SELECT
+            event_states.name,
+            event_states.event_state AS status,
+            event_states.color
+        FROM event_states
+        WHERE event_states.event_key = '{event_key}'
+    """, con)[0]
+
+    points_remaining = duckdb_result_to_dict(f"""
+        SELECT
+            quals_adjusted_points_remaining,
+            alliance_selection_points_remaining,
+            elimination_points_remaining,
+            award_points_remaining,
+            points_remaining
+        FROM event_points_remaining
+        WHERE event_key = '{event_key}'
+        AND region = '{region}'
+    """, con)[0]
+
+    context = {
+        'event': event,
+        'points_remaining': points_remaining,
+        'region': region,
+        'env': ENV,
+        'ga_tracking_id': GA_TRACKING_ID
+    }
+
+    html_content = template.render(**context)
+    write_file(html_content, f"events/{event_key}_{region}.html")
 
 def generate_dcmp_event_page(event_key: str, con: duckdb.DuckDBPyConnection):
     env = Environment(loader=FileSystemLoader('html_templates'))
@@ -516,9 +552,9 @@ def generate_html(district_key: str, con: duckdb.DuckDBPyConnection, mode: str):
         generate_district_california_page(district_key, 'north', con)
         generate_district_california_page(district_key, 'south', con)
 
-        events = duckdb_result_to_dict(f"SELECT event_key FROM events WHERE district_key = '{district_key}' and event_type = 'District'", con)
-        for event in events:
-            generate_event_page(event['event_key'], con)
+        event_regions_list = duckdb_result_to_dict(f"SELECT event_key, region FROM event_regions WHERE district_key = '{district_key}'", con)
+        for row in event_regions_list:
+            generate_event_california_page(row['event_key'], row['region'], con)
 
         teams = duckdb_result_to_dict(f"SELECT team_key FROM district_rankings WHERE district_key = '{district_key}'", con)
         for team in teams:

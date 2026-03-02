@@ -4,14 +4,14 @@
 <body>
     <div class="container">
         {% include 'includes/nav.html' %}
-        <h2>{{ district_stats.display_name }} District</h2>
+        <h2>{{ district_stats.display_name }}{% if region %} — {{ region|capitalize }} Region{% else %} District{% endif %}</h2>
         <table class="stats-table">
             <tr class="stats-table-header">
                 <th style="width: 270px;">Statistic</th>
                 <th style="width: 58px;">Value</th>
             </tr>
             <tr>
-                <td class="col-statistic">Points Remaining in the District</td>
+                <td class="col-statistic">Points Remaining in the {% if region %}Region{% else %}District{% endif %}</td>
                 <td class="col-value">{{ district_stats.points_remaining }}</td>
             </tr>
             <tr>
@@ -20,7 +20,7 @@
             </tr>
         </table>
 
-        <h2>District Events</h2>
+        <h2>{% if region %}Region{% else %}District{% endif %} Events</h2>
         <table class="events-table">
             <tr class="event-table-header">
                 <th>Event</th>
@@ -33,12 +33,12 @@
                 <td class="col-event"><a href="https://www.thebluealliance.com/event/{{ event.key }}">{{ event.name }}</a></td>
                 <td class="col-status">{{ event.status }}</td>
                 <td class="col-teams">{{ event.team_count }}</td>
-                <td class="col-points"><a href="../events/{{ event.key }}.html">{{ event.points_remaining }}</a></td>
+                <td class="col-points"><a href="../events/{{ event.key }}{% if region %}_{{ region }}{% endif %}.html">{{ event.points_remaining }}</a></td>
             </tr>
             {% endfor %}
         </table>
 
-        <h2>District Rankings</h2>
+        <h2>{% if region %}Region{% else %}District{% endif %} Rankings</h2>
         <img src="{% if env == 'DEV' %}../../static/images/district_key.png{% else %}/images/district_key.png{% endif %}" alt="key"/>
         <br/>
         <br/>

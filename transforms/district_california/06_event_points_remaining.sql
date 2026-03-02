@@ -1,14 +1,14 @@
 -- TODO: Write comments explaining this
--- TODO: Adjust points for out-of-region teams
 CREATE TABLE IF NOT EXISTS event_points_remaining AS (
     WITH
+    -- Qual points for all events, summed up to each rank, so we can adjust for out-of-region teams
     qual_points AS (
         SELECT
             event_size,
-            CAST(SUM(qual_points) AS INTEGER) AS total_qual_points,
-            total_qual_points - MIN(qual_points) * event_size AS total_adjusted_qual_points
+            team_rank AS rank,
+            CAST(SUM(qual_points) OVER (PARTITION BY event_size ORDER BY team_rank) AS INTEGER) AS qual_points_through_rank,
+            CAST(SUM(qual_points) OVER (PARTITION BY event_size ORDER BY team_rank) - MIN(qual_points) OVER (PARTITION BY event_size) * team_rank AS INTEGER) AS adjusted_qual_points_through_rank
         FROM qual_points_lookup
-        GROUP BY event_size
     ),
     awarded_award_points AS (
         SELECT
@@ -53,13 +53,13 @@ CREATE TABLE IF NOT EXISTS event_points_remaining AS (
             ELSE 0
         END AS elimination_points_remaining,
         CASE WHEN event_states.event_state IN ('Pre-Event', 'Qualifications', 'Selections') THEN 236 ELSE 0 END AS alliance_selection_points_remaining,
-        CASE WHEN event_states.event_state IN ('Pre-Event', 'Qualifications') THEN qual_points.total_adjusted_qual_points ELSE 0 END AS quals_adjusted_points_remaining,
+        CASE WHEN event_states.event_state IN ('Pre-Event', 'Qualifications') THEN qual_points.adjusted_qual_points_through_rank ELSE 0 END AS quals_adjusted_points_remaining,
         quals_adjusted_points_remaining + alliance_selection_points_remaining + elimination_points_remaining + award_points_remaining AS points_remaining
     FROM events
     JOIN event_regions ON events.event_key = event_regions.event_key
     JOIN event_states ON events.event_key = event_states.event_key
     JOIN event_teams_count ON events.event_key = event_teams_count.event_key
-    JOIN qual_points ON event_teams_count.team_count = qual_points.event_size
+    JOIN qual_points ON event_teams_count.team_count = qual_points.event_size AND event_regions.team_count = qual_points.rank
     LEFT JOIN rookie_awards ON events.event_key = rookie_awards.event_key
     LEFT JOIN awarded_award_points ON events.event_key = awarded_award_points.event_key
 )

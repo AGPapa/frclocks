@@ -72,6 +72,24 @@ CREATE TABLE IF NOT EXISTS event_points_remaining AS (
         WHERE award_points != 10 -- don't count the impact award
         GROUP BY event_key
     ),
+    -- Remaining award points are capped by the number of region teams at the event and the number of rookie teams
+    remaining_award_points AS (
+        SELECT
+            california_team_lookup.region,
+            event_teams.event_key,
+            SUM(CASE WHEN COALESCE(team_event_states.award_eligible, TRUE) THEN 1 ELSE 0 END) AS award_teams_remaining,
+            SUM(CASE WHEN district_rankings.rookie_bonus = 10 THEN 1 ELSE 0 END) AS rookie_teams,
+            CASE WHEN award_teams_remaining = 1 THEN 8
+            WHEN rookie_teams >= 1 THEN 16 + 5 * (award_teams_remaining - 2)
+            ELSE 8 + 5 * (award_teams_remaining - 1)
+            END AS max_award_points
+        FROM california_team_lookup
+        JOIN district_rankings ON california_team_lookup.team_key = district_rankings.team_key
+        JOIN event_teams ON california_team_lookup.team_key = event_teams.team_key
+        JOIN event_states ON event_teams.event_key = event_states.event_key
+        LEFT JOIN team_event_states ON event_states.event_key = team_event_states.event_key AND event_teams.team_key = team_event_states.team_key
+        GROUP BY california_team_lookup.region, event_teams.event_key
+    ),
     event_teams_count AS (
         SELECT event_key, COUNT(team_key) AS team_count
         FROM event_teams
@@ -91,11 +109,13 @@ CREATE TABLE IF NOT EXISTS event_points_remaining AS (
         event_regions.region,
         events.event_key,
         event_regions.team_count,
-        CASE WHEN event_state != 'Completed' THEN
-            68 -- don't include impact or unobtainable rookie awards
-            + COALESCE(rookie_awards.rookie_award_points, 0)
-            - COALESCE(awarded_award_points.awarded_award_points, 0)
-        ELSE 0 END AS award_points_remaining,
+        LEAST(remaining_award_points.max_award_points,
+            CASE WHEN event_state != 'Completed' THEN
+                68 -- don't include impact or unobtainable rookie awards
+                + COALESCE(rookie_awards.rookie_award_points, 0)
+                - COALESCE(awarded_award_points.awarded_award_points, 0)
+            ELSE 0 END
+        ) AS award_points_remaining,
         LEAST(
             remaining_elimination_points.max_elimination_points,
             CASE WHEN event_states.event_state = 'Finals' THEN 31 -- 30 points for match winner, 1 for possible rounding if there's backup team for finalist
@@ -119,6 +139,7 @@ CREATE TABLE IF NOT EXISTS event_points_remaining AS (
     JOIN qual_points ON event_teams_count.team_count = qual_points.event_size AND event_regions.team_count = qual_points.rank
     JOIN remaining_selection_points ON event_regions.region = remaining_selection_points.region AND events.event_key = remaining_selection_points.event_key
     JOIN remaining_elimination_points ON event_regions.region = remaining_elimination_points.region AND events.event_key = remaining_elimination_points.event_key
+    JOIN remaining_award_points ON event_regions.region = remaining_award_points.region AND events.event_key = remaining_award_points.event_key
     LEFT JOIN rookie_awards ON events.event_key = rookie_awards.event_key
     LEFT JOIN awarded_award_points ON events.event_key = awarded_award_points.event_key
 )

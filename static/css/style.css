@@ -30,6 +30,13 @@ a:hover {
     margin-top: 0;
 }
 
+/* Nav bar - 2/3 page width, centered */
+.nav-bar {
+    max-width: 66.67%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /* Common table styles */
 table, th, td {
     border: 1px solid black;

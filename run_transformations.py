@@ -7,8 +7,8 @@ def run_transformations(con: duckdb.DuckDBPyConnection, mode: str):
         transforms_folder = 'transforms/dcmp'
     elif mode == 'dcmp_divisions':
         transforms_folder = 'transforms/dcmp_divisions'
-    elif mode == 'district_california':
-        transforms_folder = 'transforms/district_california'
+    elif mode == 'district_regions':
+        transforms_folder = 'transforms/district_regions'
     else:
         transforms_folder = 'transforms/district'
 

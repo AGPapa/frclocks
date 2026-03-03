@@ -74,7 +74,7 @@ def write_static_files(mode: str):
                 ContentType='image/x-icon'
             )
 
-        if mode in ("district", "district_california"):
+        if mode in ("district", "district_regions"):
             with open("static/images/district_key.png", "rb") as file:
                 image_content = file.read()
             s3.put_object(
@@ -162,7 +162,7 @@ def generate_district_page(district_key: str, con: duckdb.DuckDBPyConnection):
     html_content = template.render(**context)
     write_file(html_content, f"districts/{district_key[4:]}.html")
 
-def generate_district_california_page(district_key: str, region: str, con: duckdb.DuckDBPyConnection):
+def generate_district_regions_page(district_key: str, region: str, con: duckdb.DuckDBPyConnection):
     env = Environment(loader=FileSystemLoader('html_templates'))
     template = env.get_template('district.html')
 
@@ -315,7 +315,7 @@ def generate_event_page(event_key: str, con: duckdb.DuckDBPyConnection):
     html_content = template.render(**context)
     write_file(html_content, f"events/{event_key}.html")
 
-def generate_event_california_page(event_key: str, region: str, con: duckdb.DuckDBPyConnection):
+def generate_event_regions_page(event_key: str, region: str, con: duckdb.DuckDBPyConnection):
     env = Environment(loader=FileSystemLoader('html_templates'))
     template = env.get_template('event.html')
 
@@ -548,13 +548,13 @@ def generate_html(district_key: str, con: duckdb.DuckDBPyConnection, mode: str):
         for team in teams:
             generate_team_page(team['team_key'], con)
 
-    elif mode == "district_california":
-        generate_district_california_page(district_key, 'north', con)
-        generate_district_california_page(district_key, 'south', con)
+    elif mode == "district_regions":
+        generate_district_regions_page(district_key, 'north', con)
+        generate_district_regions_page(district_key, 'south', con)
 
         event_regions_list = duckdb_result_to_dict(f"SELECT event_key, region FROM event_regions WHERE district_key = '{district_key}'", con)
         for row in event_regions_list:
-            generate_event_california_page(row['event_key'], row['region'], con)
+            generate_event_regions_page(row['event_key'], row['region'], con)
 
         teams = duckdb_result_to_dict(f"SELECT team_key FROM district_rankings WHERE district_key = '{district_key}'", con)
         for team in teams:

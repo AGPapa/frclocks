@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS event_points_remaining AS (
     -- TODO: Can minimize this further by looking for the first two events
     remaining_elimination_points AS (
         SELECT
-            california_team_lookup.region,
+            region_lookup.region,
             event_teams.event_key,
             SUM(CASE WHEN COALESCE(team_event_states.elim_eligible, TRUE) THEN 1 ELSE 0 END) AS elim_teams_remaining,
             CASE WHEN elim_teams_remaining = 0 THEN 0
@@ -58,11 +58,11 @@ CREATE TABLE IF NOT EXISTS event_points_remaining AS (
             WHEN elim_teams_remaining <= 9 THEN 30 * 3 + 20 * 3 + 13 * (elim_teams_remaining - 6)
             WHEN elim_teams_remaining <= 12 THEN 30 * 3 + 20 * 3 + 7 * (elim_teams_remaining - 9)
             ELSE 213 END AS max_elimination_points
-        FROM california_team_lookup
-        JOIN event_teams ON california_team_lookup.team_key = event_teams.team_key
+        FROM region_lookup
+        JOIN event_teams ON region_lookup.team_key = event_teams.team_key
         JOIN event_states ON event_teams.event_key = event_states.event_key
         LEFT JOIN team_event_states ON event_states.event_key = team_event_states.event_key AND event_teams.team_key = team_event_states.team_key
-        GROUP BY california_team_lookup.region, event_teams.event_key
+        GROUP BY region_lookup.region, event_teams.event_key
     ),
     awarded_award_points AS (
         SELECT
@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS event_points_remaining AS (
     -- Remaining award points are capped by the number of region teams at the event and the number of rookie teams
     remaining_award_points AS (
         SELECT
-            california_team_lookup.region,
+            region_lookup.region,
             event_teams.event_key,
             SUM(CASE WHEN COALESCE(team_event_states.award_eligible, TRUE) THEN 1 ELSE 0 END) AS award_teams_remaining,
             SUM(CASE WHEN district_rankings.rookie_bonus = 10 THEN 1 ELSE 0 END) AS rookie_teams,
@@ -83,12 +83,12 @@ CREATE TABLE IF NOT EXISTS event_points_remaining AS (
             WHEN rookie_teams >= 1 THEN 16 + 5 * (award_teams_remaining - 2)
             ELSE 8 + 5 * (award_teams_remaining - 1)
             END AS max_award_points
-        FROM california_team_lookup
-        JOIN district_rankings ON california_team_lookup.team_key = district_rankings.team_key
-        JOIN event_teams ON california_team_lookup.team_key = event_teams.team_key
+        FROM region_lookup
+        JOIN district_rankings ON region_lookup.team_key = district_rankings.team_key
+        JOIN event_teams ON region_lookup.team_key = event_teams.team_key
         JOIN event_states ON event_teams.event_key = event_states.event_key
         LEFT JOIN team_event_states ON event_states.event_key = team_event_states.event_key AND event_teams.team_key = team_event_states.team_key
-        GROUP BY california_team_lookup.region, event_teams.event_key
+        GROUP BY region_lookup.region, event_teams.event_key
     ),
     event_teams_count AS (
         SELECT event_key, COUNT(team_key) AS team_count

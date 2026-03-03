@@ -14,10 +14,10 @@ CREATE TABLE IF NOT EXISTS lock_status AS (
     ),
     num_of_teams AS (
         SELECT
-            california_team_lookup.region,
+            region_lookup.region,
             COUNT(*) AS num_of_teams
-        FROM california_team_lookup
-        GROUP BY california_team_lookup.region
+        FROM region_lookup
+        GROUP BY region_lookup.region
     )
     SELECT
         adjusted_district_rankings.team_key,

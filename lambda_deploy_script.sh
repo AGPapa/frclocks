@@ -20,7 +20,7 @@ cp transforms/district_regions/*.sql ./deployment/transforms/district_regions/
 cp lookups/*.csv ./deployment/lookups/
 cp html_templates/*.html ./deployment/html_templates/
 cp html_templates/includes/*.html ./deployment/html_templates/includes/
-cp static/css/style.css ./deployment/static/css/
+cp static/css/style_v2.css ./deployment/static/css/
 cp static/images/* ./deployment/static/images/
 cd deployment
 zip -r ../lambda_deployment.zip .

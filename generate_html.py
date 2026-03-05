@@ -33,11 +33,11 @@ def duckdb_result_to_dict(query: str, con: duckdb.DuckDBPyConnection):
 def write_static_files(mode: str):
     if ENV == "PROD":
         s3 = boto3.client('s3')
-        with open("static/css/style.css", "r") as file:
+        with open("static/css/style_v2.css", "r") as file:
             css_content = file.read()
             s3.put_object(
                 Bucket=S3_BUCKET,
-                Key="css/style.css",
+                Key="css/style_v2.css",
                 Body=css_content,
                 ContentType='text/css'
             )

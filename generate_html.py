@@ -146,6 +146,7 @@ def generate_district_page(district_key: str, con: duckdb.DuckDBPyConnection):
     stats = duckdb_result_to_dict(f"""
         SELECT
             district_points_remaining.points_remaining,
+            district_points_remaining.events_remaining,
             district_lookup.dcmp_capacity,
             district_lookup.display_name
         FROM district_points_remaining
@@ -205,6 +206,7 @@ def generate_district_regions_page(district_key: str, region: str, con: duckdb.D
     stats = duckdb_result_to_dict(f"""
         SELECT
             district_points_remaining.points_remaining,
+            district_points_remaining.events_remaining,
             district_lookup.dcmp_capacity,
             district_lookup.display_name
         FROM district_points_remaining

@@ -43,12 +43,30 @@ CREATE TABLE IF NOT EXISTS following_teams AS (
                 ELSE NULL
             END AS following_team_order,
             CASE WHEN following_team_can_pass THEN
-                teams_to_pass.inflated_points - teams_with_remaining_events.inflated_points
+                -- When in Finals and Awards, points are always a multiple of 5, plus a potential 8 for EI
+                CASE WHEN COALESCE(teams_with_remaining_events.double_elims_remaining, 0) = 0 THEN
+                    LEAST(
+                        CAST(CEIL((teams_to_pass.inflated_points - teams_with_remaining_events.inflated_points) / 5.0) * 5 AS INTEGER),
+                        CASE
+                            WHEN (teams_to_pass.inflated_points - teams_with_remaining_events.inflated_points) <= 8 THEN 8
+                            ELSE CAST(5 * CEIL(((teams_to_pass.inflated_points - teams_with_remaining_events.inflated_points) - 8) / 5.0) + 8 AS INTEGER)
+                        END
+                    )
+                ELSE teams_to_pass.inflated_points - teams_with_remaining_events.inflated_points
+                END
             ELSE NULL END AS following_team_points_needed_to_pass,
-            CASE WHEN following_team_can_pass THEN CAST(teams_to_pass.inflated_points - teams_with_remaining_events.inflated_points AS VARCHAR)
-            ELSE '-' END AS following_team_points_needed_to_pass_status,
-            CASE WHEN following_team_can_pass THEN 'FFD966'
-            ELSE 'E06666' END AS following_team_color
+            CASE WHEN following_team_can_pass THEN CAST(
+                CASE WHEN COALESCE(teams_with_remaining_events.double_elims_remaining, 0) = 0 THEN
+                    LEAST(
+                        CAST(CEIL((teams_to_pass.inflated_points - teams_with_remaining_events.inflated_points) / 5.0) * 5 AS INTEGER),
+                        CASE
+                            WHEN (teams_to_pass.inflated_points - teams_with_remaining_events.inflated_points) <= 8 THEN 8
+                            ELSE CAST(5 * CEIL(((teams_to_pass.inflated_points - teams_with_remaining_events.inflated_points) - 8) / 5.0) + 8 AS INTEGER)
+                        END
+                    )
+                ELSE teams_to_pass.inflated_points - teams_with_remaining_events.inflated_points
+                END AS VARCHAR)
+            ELSE '-' END AS following_team_points_needed_to_pass_status
         FROM teams_to_pass
         LEFT JOIN teams_with_remaining_events ON
                 teams_to_pass.team_key != teams_with_remaining_events.team_key
@@ -73,7 +91,9 @@ CREATE TABLE IF NOT EXISTS following_teams AS (
         GROUP BY team_key
     )
     SELECT
-        ranked_following_teams.*
+        ranked_following_teams.*,
+        CASE WHEN ranked_following_teams.following_team_can_pass THEN 'FFD966'
+        ELSE 'E06666' END AS following_team_color
     FROM ranked_following_teams
     JOIN teams_that_can_pass ON ranked_following_teams.team_key = teams_that_can_pass.team_key
     LEFT JOIN max_rank_to_display ON ranked_following_teams.team_key = max_rank_to_display.team_key

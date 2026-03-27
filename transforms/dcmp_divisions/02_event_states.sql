@@ -51,8 +51,10 @@ CREATE TABLE IF NOT EXISTS event_states AS (
             WHEN ANY_VALUE(award_state.award_count) > 10 AND ANY_VALUE(award_points.sum_award_points) >= 165 THEN 'Completed'
             ELSE 'ERROR'
         END AS event_state,
-        CASE WHEN event_state = 'Completed' THEN '93C47D'
-        ELSE 'FFD966'
+        CASE
+            WHEN event_state = 'Completed' THEN '93C47D'
+            WHEN event_state = 'Pre-Event' THEN 'FFD966'
+            ELSE 'B6D7A8'
         END AS color
     FROM events
     LEFT JOIN award_state ON events.event_key = award_state.event_key

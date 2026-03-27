@@ -13,31 +13,44 @@ def validate_event_points(con: duckdb.DuckDBPyConnection, event_key: str, mode: 
         return True
     elif event_state[0]['event_state'] == 'Selections':
         qual_points = duckdb_result_to_dict(f"SELECT SUM(qual_points) AS sum FROM event_points WHERE event_key = '{event_key}'", con)
-        if qual_points[0]['sum'] != 0:
+        elim_sum = duckdb_result_to_dict(f"SELECT SUM(elim_points) AS sum FROM event_points WHERE event_key = '{event_key}'", con)
+        if qual_points[0]['sum'] != 0 and elim_sum[0]['sum'] == 0:
             return True
         else:
-            print(f"Event {event_key} has 0 qualification points, but should have at least 1.")
+            print(f"Event {event_key} has {qual_points[0]['sum']} qualification points, but should have at least 1 and {elim_sum[0]['sum']} elimination points, but should be 0.")
             return False
     elif event_state[0]['event_state'] == 'Elims 1 to 7':
+        qual_points = duckdb_result_to_dict(f"SELECT SUM(qual_points) AS sum FROM event_points WHERE event_key = '{event_key}'", con)
         selection_points = duckdb_result_to_dict(f"SELECT SUM(selection_points) AS sum FROM event_points WHERE event_key = '{event_key}'", con)
-        if selection_points[0]['sum'] != 0:
+        elim_sum = duckdb_result_to_dict(f"SELECT SUM(elim_points) AS sum FROM event_points WHERE event_key = '{event_key}'", con)
+
+        if selection_points[0]['sum'] != 0 and qual_points[0]['sum'] != 0 and elim_sum[0]['sum'] == 0:
             return True
         else:
-            print(f"Event {event_key} has 0 selection points, but should have at least 1.")
+            print(f"Event {event_key} has {selection_points[0]['sum']} selection points, but should have at least 1 and {qual_points[0]['sum']} qualification points, but should be at least 1 and {elim_sum[0]['sum']} elimination points, but should be 0.")
             return False
 
 
     elim_points = [('Elims 8', 39), ('Elims 9', 78), ('Elims 10', 99), ('Elims 11', 120), ('Elims 12', 141), ('Elims 13', 159), ('Finals', 180), ('Awards', 210)]
     if mode == 'district_regions':
-        return True # TODO: Implement district regions validation
+        # TODO: Improve validation
+        qual_points = duckdb_result_to_dict(f"SELECT SUM(qual_points) AS sum FROM event_points WHERE event_key = '{event_key}'", con)
+        selection_points = duckdb_result_to_dict(f"SELECT SUM(selection_points) AS sum FROM event_points WHERE event_key = '{event_key}'", con)
+        if qual_points[0]['sum'] != 0 and selection_points[0]['sum'] != 0:
+            return True
+        else:
+            print(f"Event {event_key} has {qual_points[0]['sum']} qualification points, but should be at least 1 and {selection_points[0]['sum']} selection points, but should be at least 1.")
+            return False
     multiplier = 3 if mode in ['dcmp', 'dcmp_divisions'] else 1
     for state, points in elim_points:
         if event_state[0]['event_state'] == state:
-            elim_points = duckdb_result_to_dict(f"SELECT SUM(elim_points) AS sum FROM event_points WHERE event_key = '{event_key}'", con)
-            if elim_points[0]['sum'] >= points * multiplier:
+            qual_points = duckdb_result_to_dict(f"SELECT SUM(qual_points) AS sum FROM event_points WHERE event_key = '{event_key}'", con)
+            selection_points = duckdb_result_to_dict(f"SELECT SUM(selection_points) AS sum FROM event_points WHERE event_key = '{event_key}'", con)
+            elim_sum = duckdb_result_to_dict(f"SELECT SUM(elim_points) AS sum FROM event_points WHERE event_key = '{event_key}'", con)
+            if elim_sum[0]['sum'] >= points * multiplier and qual_points[0]['sum'] != 0 and selection_points[0]['sum'] != 0:
                 return True
             else:
-                print(f"Event {event_key} has {elim_points[0]['sum']} elimination points, but should have at least {points * multiplier}.")
+                print(f"Event {event_key} has {elim_sum[0]['sum']} elimination points, but should have at least {points * multiplier} and {qual_points[0]['sum']} qualification points, but should be at least 1 and {selection_points[0]['sum']} selection points, but should be at least 1.")
                 return False
 
     return True

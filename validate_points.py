@@ -69,7 +69,7 @@ def validate_event_points(con: duckdb.DuckDBPyConnection, event_key: str, mode: 
         else:
             print(f"Event {event_key} has {qual_points[0]['sum']} qualification points, but should be at least 1 and {selection_points[0]['sum']} selection points, but should be at least 1.")
             return False
-    multiplier = 3 if mode in ['dcmp', 'dcmp_divisions'] else 1
+    multiplier = 3 if mode in ['dcmp', 'dcmp_regions', 'dcmp_divisions'] else 1
     for state, points in elim_points:
         if event_state[0]['event_state'] == state:
             qual_points = duckdb_result_to_dict(f"SELECT SUM(qual_points) AS sum FROM event_points WHERE event_key = '{event_key}'", con)

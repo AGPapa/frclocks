@@ -84,7 +84,7 @@ def write_static_files(mode: str):
                 Body=image_content,
                 ContentType='image/png'
             )
-        elif mode == "dcmp":
+        elif mode in ("dcmp", "dcmp_regions"):
             with open("static/images/dcmp_key.png", "rb") as file:
                 image_content = file.read()
             s3.put_object(
@@ -252,7 +252,11 @@ def generate_dcmp_page(district_key: str, con: duckdb.DuckDBPyConnection):
     events = duckdb_result_to_dict(f"""
         SELECT
             event_states.event_key AS key,
-            district_lookup.dcmp_name AS name,
+            CASE
+                WHEN LOWER(event_states.name) LIKE '%north%' THEN 'Northern ' || district_lookup.dcmp_name
+                WHEN LOWER(event_states.name) LIKE '%south%' THEN 'Southern ' || district_lookup.dcmp_name
+                ELSE district_lookup.dcmp_name
+            END AS name,
             event_states.event_state AS status,
             event_points_remaining.team_count,
             event_points_remaining.points_remaining,
@@ -573,7 +577,7 @@ def generate_html(district_key: str, con: duckdb.DuckDBPyConnection, mode: str):
         for team in teams:
             generate_team_page(team['team_key'], con)
 
-    elif mode == "dcmp":
+    elif mode in ("dcmp", "dcmp_regions"):
         generate_dcmp_page(district_key, con)
 
         events = duckdb_result_to_dict(f"SELECT event_key FROM events WHERE district_key = '{district_key}' and event_type = 'District Championship'", con)

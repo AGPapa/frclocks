@@ -1,6 +1,7 @@
 import duckdb
 from jinja2 import Environment, FileSystemLoader
 import os
+from datetime import date
 from dotenv import load_dotenv
 import boto3
 from io import StringIO
@@ -11,6 +12,16 @@ DIR = "output_html"
 S3_BUCKET = os.getenv('S3_BUCKET')
 GA_TRACKING_ID = os.getenv('GA_TRACKING_ID')
 META_PIXEL_ID = os.getenv('META_PIXEL_ID')
+
+
+def _template_base_context() -> dict:
+    return {
+        'env': ENV,
+        'ga_tracking_id': GA_TRACKING_ID,
+        'meta_pixel_id': META_PIXEL_ID,
+        'css_cache_version': date.today().strftime("%Y%m%d"),
+    }
+
 
 def write_file(content: str, path: str):
     if ENV == "PROD":
@@ -97,11 +108,7 @@ def write_static_files(mode: str):
 def generate_homepage():
     env = Environment(loader=FileSystemLoader('html_templates'))
     template = env.get_template('index.html')
-    context = {
-        'env': ENV,
-        'ga_tracking_id': GA_TRACKING_ID,
-        'meta_pixel_id': META_PIXEL_ID
-    }
+    context = _template_base_context()
 
     html_content = template.render(**context)
     write_file(html_content, "index.html")
@@ -155,12 +162,10 @@ def generate_district_page(district_key: str, con: duckdb.DuckDBPyConnection):
     """, con)[0]
 
     context = {
+        **_template_base_context(),
         'rankings': rankings,
         'events': events,
         'district_stats': stats,
-        'env': ENV,
-        'ga_tracking_id': GA_TRACKING_ID,
-        'meta_pixel_id': META_PIXEL_ID
     }
 
     html_content = template.render(**context)
@@ -216,13 +221,11 @@ def generate_district_regions_page(district_key: str, region: str, con: duckdb.D
     """, con)[0]
 
     context = {
+        **_template_base_context(),
         'rankings': rankings,
         'events': events,
         'district_stats': stats,
         'region': region,
-        'env': ENV,
-        'ga_tracking_id': GA_TRACKING_ID,
-        'meta_pixel_id': META_PIXEL_ID
     }
 
     html_content = template.render(**context)
@@ -253,6 +256,7 @@ def generate_dcmp_page(district_key: str, con: duckdb.DuckDBPyConnection):
         SELECT
             event_states.event_key AS key,
             CASE
+                WHEN NOT district_lookup.dcmp_directional_labels THEN district_lookup.dcmp_name
                 WHEN LOWER(event_states.name) LIKE '%north%' THEN 'Northern ' || district_lookup.dcmp_name
                 WHEN LOWER(event_states.name) LIKE '%south%' THEN 'Southern ' || district_lookup.dcmp_name
                 ELSE district_lookup.dcmp_name
@@ -279,12 +283,10 @@ def generate_dcmp_page(district_key: str, con: duckdb.DuckDBPyConnection):
     """, con)[0]
 
     context = {
+        **_template_base_context(),
         'rankings': rankings,
         'events': events,
         'district_stats': stats,
-        'env': ENV,
-        'ga_tracking_id': GA_TRACKING_ID,
-        'meta_pixel_id': META_PIXEL_ID
     }
 
     html_content = template.render(**context)
@@ -317,11 +319,9 @@ def generate_event_page(event_key: str, con: duckdb.DuckDBPyConnection):
     """, con)[0]
 
     context = {
+        **_template_base_context(),
         'event': event,
         'points_remaining': points_remaining,
-        'env': ENV,
-        'ga_tracking_id': GA_TRACKING_ID,
-        'meta_pixel_id': META_PIXEL_ID
     }
 
     html_content = template.render(**context)
@@ -353,12 +353,10 @@ def generate_event_regions_page(event_key: str, region: str, con: duckdb.DuckDBP
     """, con)[0]
 
     context = {
+        **_template_base_context(),
         'event': event,
         'points_remaining': points_remaining,
         'region': region,
-        'env': ENV,
-        'ga_tracking_id': GA_TRACKING_ID,
-        'meta_pixel_id': META_PIXEL_ID
     }
 
     html_content = template.render(**context)
@@ -384,10 +382,8 @@ def generate_dcmp_event_page(event_key: str, con: duckdb.DuckDBPyConnection):
     """, con)[0]
 
     context = {
+        **_template_base_context(),
         'event': event,
-        'env': ENV,
-        'ga_tracking_id': GA_TRACKING_ID,
-        'meta_pixel_id': META_PIXEL_ID
     }
 
     html_content = template.render(**context)
@@ -424,11 +420,9 @@ def generate_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
     """, con)
 
     context = {
+        **_template_base_context(),
         'lock_status': lock_status,
         'following_teams': following_teams,
-        'env': ENV,
-        'ga_tracking_id': GA_TRACKING_ID,
-        'meta_pixel_id': META_PIXEL_ID
     }
 
     # Only generate team pages if needed
@@ -467,11 +461,9 @@ def generate_dcmp_team_page(team_key: str, con: duckdb.DuckDBPyConnection):
     """, con)
 
     context = {
+        **_template_base_context(),
         'lock_status': lock_status,
         'following_teams': following_teams,
-        'env': ENV,
-        'ga_tracking_id': GA_TRACKING_ID,
-        'meta_pixel_id': META_PIXEL_ID
     }
 
     # Only generate team pages if needed
@@ -540,12 +532,10 @@ def generate_dcmp_divisions_page(district_key: str, con: duckdb.DuckDBPyConnecti
     """, con)[0]
 
     context = {
+        **_template_base_context(),
         'rankings': rankings,
         'events': events,
         'district_stats': stats,
-        'env': ENV,
-        'ga_tracking_id': GA_TRACKING_ID,
-        'meta_pixel_id': META_PIXEL_ID
     }
 
     html_content = template.render(**context)
@@ -600,4 +590,4 @@ def generate_html(district_key: str, con: duckdb.DuckDBPyConnection, mode: str):
 
 if __name__ == "__main__":
     con = duckdb.connect()
-    generate_html("2024fma", con)
+    generate_html("2024fma", con, "district")

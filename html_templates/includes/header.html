@@ -37,5 +37,5 @@
     <!-- End Meta Pixel Code -->
     {% endif %}
     
-    <link rel="stylesheet" href="{% if env == 'DEV' %}../../static/css/style_v2.css{% else %}/css/style_v2.css{% endif %}">
+    <link rel="stylesheet" href="{% if env == 'DEV' %}../../static/css/style_v2.css{% else %}/css/style_v2.css{% endif %}?v={{ css_cache_version }}">
 </head>

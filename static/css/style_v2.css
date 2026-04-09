@@ -38,6 +38,11 @@ a:hover {
     text-wrap: balance;
 }
 
+/* Keep each district link on one line (e.g. "North Carolina", "Pacific Northwest") */
+.container nav a {
+    white-space: nowrap;
+}
+
 /* Common table styles */
 table, th, td {
     border: 1px solid black;

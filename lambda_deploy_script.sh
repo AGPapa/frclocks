@@ -5,6 +5,7 @@ mkdir deployment/transforms
 mkdir deployment/transforms/district
 mkdir deployment/transforms/dcmp
 mkdir deployment/transforms/dcmp_divisions
+mkdir deployment/transforms/dcmp_regions
 mkdir deployment/transforms/district_regions
 mkdir deployment/lookups
 mkdir deployment/html_templates
@@ -16,6 +17,7 @@ cp *.py ./deployment/
 cp transforms/district/*.sql ./deployment/transforms/district/
 cp transforms/dcmp/*.sql ./deployment/transforms/dcmp/
 cp transforms/dcmp_divisions/*.sql ./deployment/transforms/dcmp_divisions/
+cp transforms/dcmp_regions/*.sql ./deployment/transforms/dcmp_regions/
 cp transforms/district_regions/*.sql ./deployment/transforms/district_regions/
 cp lookups/*.csv ./deployment/lookups/
 cp html_templates/*.html ./deployment/html_templates/

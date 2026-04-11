@@ -41,10 +41,10 @@ CREATE TABLE IF NOT EXISTS qualifying_award_winners AS (
         HAVING COUNT(*) >= 2
     ),
     winning_teams AS (
-        SELECT district_key, captain_key AS team_key FROM winners
-        UNION ALL SELECT district_key, first_selection_key AS team_key FROM winners
-        UNION ALL SELECT district_key, second_selection_key AS team_key FROM winners WHERE district_key != '2025fsc' -- South Carolina doesn't send second selection
-        UNION ALL SELECT district_key, backup_key AS team_key FROM winners WHERE backup_key IS NOT NULL AND district_key != '2025fsc' -- South Carolina doesn't send backup
+        SELECT district_key, event_key, captain_key AS team_key FROM winners
+        UNION ALL SELECT district_key, event_key, first_selection_key AS team_key FROM winners
+        UNION ALL SELECT district_key, event_key, second_selection_key AS team_key FROM winners
+        UNION ALL SELECT district_key, event_key, backup_key AS team_key FROM winners WHERE backup_key IS NOT NULL
     ),
     award_teams AS (
         SELECT
@@ -57,17 +57,13 @@ CREATE TABLE IF NOT EXISTS qualifying_award_winners AS (
             END AS award_type
         FROM awards
         JOIN events ON awards.event_key = events.event_key
-        WHERE 
-            (
-                (events.district_key != '2025fsc' AND award_type IN (0, 9, 10))
-                OR (events.district_key = '2025fsc' AND award_type IN (0, 9)) -- South Carolina doesn't send RAS winner
-            )
-            AND events.event_type = 'District Championship'
+        WHERE award_type IN (0, 9, 10) AND events.event_type = 'District Championship'
     ),
     merged_qualifiers AS (
         SELECT
             COALESCE(winning_teams.district_key, award_teams.district_key, prequalified_teams.district_key) AS district_key,
             COALESCE(winning_teams.team_key, award_teams.team_key, prequalified_teams.team_key) AS team_key,
+            COALESCE(winning_teams.event_key, award_teams.event_key) AS event_key, -- TODO: Add prequalified event key
             award_teams.award_type AS award_type,
             winning_teams.team_key IS NOT NULL AS is_winner,
             prequalified_teams.team_key IS NOT NULL AS is_prequalified
@@ -78,8 +74,8 @@ CREATE TABLE IF NOT EXISTS qualifying_award_winners AS (
             AND COALESCE(award_teams.team_key, winning_teams.team_key) = prequalified_teams.team_key
     )
     SELECT
-        district_key,
-        team_key,
+        merged_qualifiers.district_key,
+        merged_qualifiers.team_key,
         CASE
             WHEN MAX(CASE WHEN award_type = 'Impact' THEN 1 ELSE 0 END) = 1 THEN 'Impact'
             WHEN MAX(CASE WHEN award_type = 'EI' THEN 1 ELSE 0 END) = 1 THEN 'EI'
@@ -87,7 +83,8 @@ CREATE TABLE IF NOT EXISTS qualifying_award_winners AS (
             ELSE NULL
         END AS award_type,
         BOOL_OR(is_winner) AS is_winner,
-        BOOL_OR(is_prequalified) AS is_prequalified
+        BOOL_OR(is_prequalified) AS is_prequalified,
+        ANY_VALUE(merged_qualifiers.event_key) AS event_key
     FROM merged_qualifiers
-    GROUP BY district_key, team_key
+    GROUP BY merged_qualifiers.district_key, merged_qualifiers.team_key
 )

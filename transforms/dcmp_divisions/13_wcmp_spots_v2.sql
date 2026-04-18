@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS wcmp_spots_v2 AS (
     locked_teams_per_alliance AS (
         SELECT
             alive_alliances.district_key,
-            alive_alliances.alliance_name,
+            alive_alliances.alliance_name || ' ' || alive_alliances.event_key AS alliance_key,
             SUM(CASE WHEN lock_status.lock_status IN ('100%', 'Prequalified', 'Impact', 'EI', 'RAS') THEN 1 ELSE 0 END) AS num_locked_teams
         FROM alive_alliances
         LEFT JOIN lock_status ON lock_status.team_key IN (alive_alliances.captain_key, alive_alliances.first_selection_key, alive_alliances.second_selection_key, alive_alliances.backup_key)

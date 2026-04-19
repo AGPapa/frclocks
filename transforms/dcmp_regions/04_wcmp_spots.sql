@@ -19,10 +19,11 @@ CREATE TABLE IF NOT EXISTS wcmp_spots AS (
                     + CASE WHEN qualifying_award_winners.is_winner THEN 1 ELSE 0 END
                 ) = 3 THEN 1 ELSE 0 END), 0)
             AS num_triple_qualifying_awards,
-            CASE WHEN ANY_VALUE(event_states.event_state) = 'Completed'
-            THEN district_lookup.dcmp_ras_awards - SUM(CASE WHEN qualifying_award_winners.award_type = 'RAS' THEN 1 ELSE 0 END)
+            CASE WHEN MAX(event_states.event_state) = 'Completed' AND MIN(event_states.event_state) = 'Completed'
+            THEN ANY_VALUE(district_lookup.dcmp_ras_awards) - SUM(CASE WHEN qualifying_award_winners.award_type = 'RAS' THEN 1 ELSE 0 END)
             ELSE 0 END AS num_missing_qualifying_awards
         FROM event_states
+        JOIN district_lookup ON event_states.district_key = district_lookup.district_key
         LEFT JOIN qualifying_award_winners
             ON event_states.district_key = qualifying_award_winners.district_key
             AND event_states.event_key = qualifying_award_winners.event_key
